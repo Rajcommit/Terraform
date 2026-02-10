@@ -18,25 +18,41 @@ Build a production-ready, multi-tier web application infrastructure using Terraf
 - [x] EC2 instances in private subnets
 - [x] Multi-AZ distribution
 - [x] Proper module communication
-- [ ] Launch Template
-- [ ] Auto Scaling Group
-- [ ] Application Load Balancer
-- [ ] Target Groups
+- [x] IAM roles and instance profiles
+- [x] User data scripts
+- [x] Enhanced monitoring
 
-### Phase 3: Database Layer
+### Phase 3: Load Balancer ⚠️ IN PROGRESS
+- [x] ALB structure created
+- [x] Target group configured
+- [x] HTTP listener configured
+- [ ] ALB security group (needs fix)
+- [ ] Target group attachments
+- [ ] Health checks validation
+
+### Phase 4: VCS-Driven Workflow 🚧 IN PROGRESS
+- [x] Git repository setup
+- [x] Code committed and pushed
+- [x] Documentation created
+- [ ] GitHub connected to HCP Terraform
+- [ ] Workspace configured
+- [ ] Workflow tested
+- [ ] First PR with automated plan
+
+### Phase 5: Database Layer
 - [ ] RDS subnet group
 - [ ] RDS instance (PostgreSQL)
 - [ ] ElastiCache subnet group
 - [ ] ElastiCache cluster (Redis)
 - [ ] S3 buckets
 
-### Phase 4: Monitoring & Alerts
+### Phase 6: Monitoring & Alerts
 - [ ] CloudWatch dashboards
 - [ ] CloudWatch alarms
 - [ ] SNS topics
 - [ ] Lambda for automation
 
-### Phase 5: Security & Compliance
+### Phase 7: Security & Compliance
 - [ ] WAF rules
 - [ ] IAM roles and policies
 - [ ] Secrets Manager
@@ -46,8 +62,53 @@ Build a production-ready, multi-tier web application infrastructure using Terraf
 **Phase**: 1 - Networking Foundation (COMPLETED ✅)
 **Phase**: 2 - Compute Layer with Security (COMPLETED ✅)
 **Phase**: 3 - IAM & Enhanced Features (COMPLETED ✅)
-**Status**: DEPLOYED & RUNNING 🚀
-**Last Updated**: 2026-02-06T10:51:30+05:30
+**Phase**: 4 - VCS-Driven Workflow Setup (IN PROGRESS 🚧)
+**Status**: READY FOR GITOPS WORKFLOW 🚀
+**Last Updated**: 2026-02-11T01:41:27+05:30
+
+## Session Update: Feb 11, 2026
+
+### VCS-Driven Workflow Setup ✅
+- Committed infrastructure code to Git
+- Created comprehensive VCS-WORKFLOW-SETUP.md guide
+- Created VCS-QUICK-REF.md for daily workflow
+- Added proper .gitignore for Terraform
+- Pushed to GitHub: Rajcommit/Terraform
+
+### Documentation Created
+- **VCS-WORKFLOW-SETUP.md**: Complete setup guide with:
+  - Step-by-step HCP Terraform connection
+  - Workflow diagram and examples
+  - Security best practices
+  - Troubleshooting guide
+- **VCS-QUICK-REF.md**: Quick reference for daily use
+
+### Key Concepts Learned
+- GitOps workflow: Code → PR → Plan → Review → Merge → Apply
+- VCS-driven vs UI-driven Terraform
+- Branch protection and code review
+- Automated plan on PR, manual approval on merge
+- Full audit trail in Git + HCP Terraform
+
+### Next Actions
+1. Connect GitHub to HCP Terraform workspace
+2. Configure workspace settings (working directory, variables)
+3. Test workflow with small change
+4. Fix ALB security group using VCS workflow
+
+### Infrastructure Analysis Completed
+- Network module: ✅ Complete (VPC, subnets, gateways, routes)
+- Compute module: ✅ Complete (EC2, IAM, security groups)
+- Load balancer module: ⚠️ Has issue (ALB security group reference)
+- Issue identified: main.tf references non-existent output
+
+### Module Communication Mastery
+- Reviewed complete data flow: Network → Root → Compute
+- Understood circular reference issues
+- Clarified variable defaults vs explicit values
+- Confirmed proper output/input naming
+
+---
 
 ## Session Update: Feb 6, 2026
 
@@ -241,6 +302,82 @@ resource "aws_subnet" "private" {
 - Follow AWS best practices
 - Document as we build
 - CIDR strategy allows room for growth (can add more subnets)
+
+---
+
+## 🎯 Current Focus: VCS-Driven Workflow
+
+### What is VCS-Driven Workflow?
+GitOps approach where infrastructure changes flow through Git:
+1. Developer creates feature branch
+2. Makes Terraform changes
+3. Opens Pull Request
+4. HCP Terraform automatically runs `terraform plan`
+5. Team reviews plan in PR comments
+6. PR merged to main
+7. HCP Terraform runs `terraform apply` (with approval)
+
+### Benefits
+- ✅ Version control for all changes
+- ✅ Code review before apply
+- ✅ Automated planning
+- ✅ Full audit trail
+- ✅ Team collaboration
+- ✅ Production-grade workflow
+
+### Setup Status
+- [x] Git repository configured
+- [x] Code committed and pushed to GitHub
+- [x] Documentation created (VCS-WORKFLOW-SETUP.md)
+- [ ] GitHub connected to HCP Terraform
+- [ ] Workspace settings configured
+- [ ] First test PR created
+
+### Next Immediate Steps
+1. Go to https://app.terraform.io
+2. Connect GitHub repo to workspace "Terraform_cli"
+3. Set working directory to `modules`
+4. Add AWS credentials as environment variables
+5. Test with small change (add VPC tag)
+6. Fix ALB security group using VCS workflow
+
+---
+
+## 🐛 Known Issues
+
+### Issue 1: ALB Security Group Reference
+**Location**: `main.tf` line 42
+**Problem**: References `module.network.alb_security_group_id` which doesn't exist
+**Solution**: Create security group in loadbalancer module (not network)
+**Status**: Will fix using VCS workflow as first real test
+
+### Issue 2: Load Balancer Not Fully Integrated
+**Problem**: ALB created but not attached to EC2 instances
+**Solution**: Add target group attachments in loadbalancer module
+**Status**: Pending after security group fix
+
+---
+
+## 📚 Documentation Files
+
+- **CHECKPOINT.md** (this file): Progress tracker and session notes
+- **PROJECT_HISTORY.md**: Complete conversation history and learning
+- **FUTUREPLAN.md**: Planned enhancements and features
+- **VCS-WORKFLOW-SETUP.md**: Complete VCS workflow setup guide
+- **VCS-QUICK-REF.md**: Quick reference for daily workflow
+
+---
+
+## 🔗 Important Links
+
+- **GitHub Repository**: https://github.com/Rajcommit/Terraform
+- **HCP Terraform**: https://app.terraform.io/app/RAjAbhishek/workspaces/Terraform_cli
+- **AWS Region**: ap-south-1 (Mumbai)
+- **Working Directory**: `modules/`
+
+---
+
+**Ready for Production-Grade GitOps! 🚀**
 
 
 
