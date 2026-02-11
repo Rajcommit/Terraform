@@ -19,6 +19,7 @@ resource "aws_vpc" "main" {
     local.common_tags,
     {
       Name = "${var.project_name}-vpc"
+      VCS-Test = "GitOps-Workflow-Test"
     }
   )
 }

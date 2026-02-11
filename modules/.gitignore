@@ -61,3 +61,27 @@ __pycache__/
 *.service
 *.timer
 mcp_config.json
+
+# Blueprint documentation (exclude from repo)
+blueprint/CHECKPOINT.md
+blueprint/EARLY_SESSIONS_SUMMARY.md
+blueprint/FUTUREPLAN.md
+blueprint/PROJECT_HISTORY.md
+blueprint/README.md
+
+# VCS workflow documentation (exclude from repo)
+VCS-QUICK-REF.md
+VCS-WORKFLOW-SETUP.md
+
+# Additional Kiro directories
+module/.kiro/
+
+# Project directories
+module/terrafromproject/
+
+# Archive directory
+.archive/
+
+# Logs directory
+logs/
+
