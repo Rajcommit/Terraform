@@ -7,7 +7,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./modules
+    working-directory: modules
 
 jobs:
   #job number 1 : Prepare and Plan and Validate
