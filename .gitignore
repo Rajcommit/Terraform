@@ -1,0 +1,100 @@
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Sensitive files
+*.pem
+*.key
+secrets.tf
+
+# OS files
+.DS_Store
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Kiro files
+.kiro/
+
+# Test files
+*.txt
+!README.txt
+
+# Binary files
+devopsproject
+project
+projectmodules*
+kiro
+latency*
+teraform_simulator
+terraformuncle
+terrafromenhanceagentprogress
+modules/blueprint/undertanding.md
+modules/manoranana 
+
+# Backup directories
+backup-*/
+
+# Log files
+logs/
+*.log
+
+# Python files
+*.py
+__pycache__/
+
+# Other
+*.plan
+*.pdf
+*.sh
+*.service
+*.timer
+mcp_config.json
+
+# Blueprint documentation (exclude from repo)
+blueprint/CHECKPOINT.md
+blueprint/EARLY_SESSIONS_SUMMARY.md
+blueprint/FUTUREPLAN.md
+blueprint/PROJECT_HISTORY.md
+blueprint/README.md
+
+# VCS workflow documentation (exclude from repo)
+VCS-QUICK-REF.md
+VCS-WORKFLOW-SETUP.md
+
+# Additional Kiro directories
+module/.kiro/
+
+# Project directories
+module/terrafromproject/
+
+# Archive directory
+.archive/
+
+# Logs directory
+logs/
+
+# Ignore terraform-provider-aws source code
+terraform-provider-aws/
+modules/blueprint/undertanding.md
+modules/manoranana/
+modules/blueprint/undertanding.md
+modules/manoranana/
+blueprint/undertanding.md
+blueprint/undertanding.md
+manoranana
+manoranana
+localfile.tf
