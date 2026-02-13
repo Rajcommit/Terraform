@@ -44,12 +44,12 @@ module "loadbalancer" {
 
 
 module "compute" {
-  source         = "./module/compute"
-  environment    = var.environment
-  instance_count = 2
-  subnet_ids     = module.network.private_subnet_ids
+  source                = "./module/compute"
+  environment           = var.environment
+  instance_count        = 2
+  subnet_ids            = module.network.private_subnet_ids
   alb_security_group_id = module.loadbalancer.alb_security_group_id
-  vpc_id         = module.network.vpc_id
+  vpc_id                = module.network.vpc_id
 
 }
 
