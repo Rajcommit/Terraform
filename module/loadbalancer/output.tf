@@ -1,6 +1,6 @@
 output "alb_security_group_id" {
   description = "The ID of the security group for the Application Load Balancer"
-  value = aws_security_group.alb_sg.id
+  value       = aws_security_group.alb_sg.id
 }
 
 output "alb_arn" {

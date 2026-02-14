@@ -18,7 +18,7 @@ resource "aws_vpc" "main" {
   tags = merge(
     local.common_tags,
     {
-      Name = "${var.project_name}-vpc"
+      Name     = "${var.project_name}-vpc"
       VCS-Test = "GitOps-Workflow-Test"
     }
   )

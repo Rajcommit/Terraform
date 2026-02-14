@@ -48,7 +48,7 @@ resource "aws_lb" "application_load_balancer" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = var.public_subnet_ids
-  
+
   tags = merge(
     local.common_tags,
     {

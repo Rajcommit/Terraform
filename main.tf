@@ -56,15 +56,15 @@ module "compute" {
 
 
 module "autoscalling" {
-  source = "./module/autoscaling"
-  project_name = "miniserver"
-  ami_id = module.compute.ami_id
-  instance_type = "t3.micro"
+  source                = "./module/autoscaling"
+  project_name          = "miniserver"
+  ami_id                = module.compute.ami_id
+  instance_type         = "t3.micro"
   instance_profile_name = module.compute.instance_profile_name
-  security_group_id = module.compute.security_group_id
-  user_data = module.compute.user_data
-  subnet_ids = module.network.private_subnet_ids
-  target_group_arn = module.loadbalancer.target_group_arn
+  security_group_id     = module.compute.security_group_id
+  user_data             = module.compute.user_data
+  subnet_ids            = module.network.private_subnet_ids
+  target_group_arn      = module.loadbalancer.target_group_arn
 }
 
 
