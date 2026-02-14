@@ -16,3 +16,20 @@ output "instance_ips" {
     private_ips = aws_instance.miniserver[*].private_ip
   }
 }
+
+output  "instance_profile_name" {
+   value = aws_iam_instance_profile.miniserver_profile.name
+}
+
+
+output "security_group_id" {
+    value = aws_security_group.miniserver_sg.id
+}
+
+
+output "user_data" {
+    value = <<-EOF
+              #!/bin/bash
+              echo "Hello, World!" > /var/www/html/index.html
+              EOF
+}

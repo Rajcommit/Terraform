@@ -46,10 +46,25 @@ module "loadbalancer" {
 module "compute" {
   source                = "./module/compute"
   environment           = var.environment
-  instance_count        = 2
+  instance_count        = 0
   subnet_ids            = module.network.private_subnet_ids
   alb_security_group_id = module.loadbalancer.alb_security_group_id
   vpc_id                = module.network.vpc_id
 
 }
+
+
+
+module "autoscalling" {
+  source = "./module/autoscaling"
+  project_name = "miniserver"
+  ami_id = module.compute.ami_id
+  instance_type = "t3.micro"
+  instance_profile_name = module.compute.instance_profile_name
+  security_group_id = module.compute.security_group_id
+  user_data = module.compute.user_data
+  subnet_ids = module.network.private_subnet_ids
+  target_group_arn = module.loadbalancer.target_group_arn
+}
+
 
