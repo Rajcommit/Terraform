@@ -18,7 +18,7 @@ resource "aws_db_instance" "mysql" {
     allocated_storage = 20
     storage_type = "gp3"
     parameter_group_name = aws_db_parameter_group.mysql.name
-    db_subnet_group_name = aws_security_group.rds
+    db_subnet_group_name = var.private_subnet_ids.rds
     skip_final_snapshot = true
 
 
@@ -41,12 +41,12 @@ resource "aws_db_parameter_group" "mysql" {
    family = "mysql8.0"
    
    parameter {
-     name = "max_connetions"
+     name = "max_connections"
      value = "50"
    }
 
    tags = merge(
-      logs.common_tags,
+      local.common_tags,
       {
          Name = "${var.project_name}-mysql-params"
       }
