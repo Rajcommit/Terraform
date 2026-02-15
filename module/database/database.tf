@@ -17,6 +17,7 @@ resource "aws_db_instance" "mysql" {
     instance_class = "db.t3.micro"
     allocated_storage = 20
     storage_type = "gp3"
+    parameter_group_name = aws_db_parameter_group.mysql.name
 
     db_name = "appdb"
     username = var.db_username
