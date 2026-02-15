@@ -1,13 +1,13 @@
-output "dbusername" {
-    description = "Database username"
-    value       = var.db_username
-}
+# output "dbusername" {
+#     description = "Database username"
+#     value       = var.db_username
+# }
 
-output "dbpassword" {
-    description = "Database password"
-    value       = var.db_password
-    sensitive   = true
-}
+# output "dbpassword" {
+#     description = "Database password"
+#     value       = var.db_password
+#     sensitive   = true
+# }
 
 output "rds_endpoint" {
     description = "RDS MYSQL PORT"
@@ -18,3 +18,11 @@ output "rds_port" {
     description = "RDS Mysql port"
     value = aws_db_instance.mysql.port
 }
+
+
+
+output "database_name" {
+    description = "Initial database name"
+    value       = aws_db_instance.mysql.db_name
+}
+
