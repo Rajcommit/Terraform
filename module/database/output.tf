@@ -18,8 +18,3 @@ output "rds_port" {
     description = "RDS Mysql port"
     value = aws_db_instance.mysql.port
 }
-
-output "db_username" {
-    description = "Database username"
-    value = var.db_username
-}
