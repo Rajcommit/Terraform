@@ -27,7 +27,20 @@ resource "aws_db_instance" "mysql" {
 ##Custom Parameter Group 
 
 resource "aws_db_parameter_group" "mysql" {
- name = "${var.project_name}-mysql-parms"
+   name = "${var.project_name}-mysql-parms"
+   family = "mysql8.0"
+   
+   parameter {
+     name = "max_connetions"
+     value = "50"
+   }
+
+   tags = merge(
+      logs.common_tags,
+      {
+         Name = "${var.project_name}-mysql-params"
+      }
+   )
 }
 
 
