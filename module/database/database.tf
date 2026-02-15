@@ -18,8 +18,9 @@ resource "aws_db_instance" "mysql" {
     allocated_storage = 20
     storage_type = "gp3"
     parameter_group_name = aws_db_parameter_group.mysql.name
-    db_subnet_group_name = var.private_subnet_ids.rds
+    db_subnet_group_name = aws_db_subnet_group.main.name
     skip_final_snapshot = true
+    vpc_security_group_ids = [aws_security_group.rds.id]
 
 
     db_name = "appdb"
