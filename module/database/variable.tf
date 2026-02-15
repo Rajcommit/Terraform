@@ -34,5 +34,6 @@ variable "db_username" {
 variable "db_password" {
     description = "Database master password"
     type = string
-    sensitive =true
+    sensitive = true
+    default     = "ChangeMe123!"
 }
