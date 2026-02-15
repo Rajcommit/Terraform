@@ -21,8 +21,3 @@ output "rds_port" {
 
 
 
-output "database_name" {
-    description = "Initial database name"
-    value       = aws_db_instance.mysql.db_name
-}
-
