@@ -18,17 +18,26 @@ resource "aws_db_instance" "mysql" {
     allocated_storage = 20
     storage_type = "gp3"
     parameter_group_name = aws_db_parameter_group.mysql.name
+    db_subnet_group_name = aws_security_group.rds
+    skip_final_snapshot = true
+
 
     db_name = "appdb"
     username = var.db_username
     password = var.db_password
+
+    tags = merge( local.common_tags,
+    {
+           Name = "${var.project_name}-mysql-rds"
+    }
+)
 }
 
 
 ##Custom Parameter Group 
 
 resource "aws_db_parameter_group" "mysql" {
-   name = "${var.project_name}-mysql-parms"
+   name = "${var.project_name}-mysql-params"
    family = "mysql8.0"
    
    parameter {
