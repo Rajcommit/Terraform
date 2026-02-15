@@ -72,8 +72,6 @@ module "database" {
   source = "./module/database"
   project_name = "miniserver-rds"
   environment = var.environment
-  db_username = module.database.dbusername
-  db_password = module.database.db_password
   vpc_id = module.network.vpc_id
   vpc_cidr = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_ids
