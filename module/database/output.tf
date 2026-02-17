@@ -19,5 +19,7 @@ output "rds_port" {
     value = aws_db_instance.mysql.port
 }
 
-
-
+output "db_secret_arn" {
+    description = "ARN of the database secret_credentials for future refrencing"
+    value = aws_secretsmanager_secret.db_credentials.arn
+}
