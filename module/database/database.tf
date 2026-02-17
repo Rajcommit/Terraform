@@ -8,6 +8,37 @@ locals {
   }
 }
 
+resource "random_password" "db_password" {
+    length = 16
+    special = true
+}
+
+##Storing credentials in Secret Manager
+
+resource "aws_secretsmanager_secret" "db_credentials" {
+  name = "${var.project_name}-db-credentials"
+  tags = merge(
+    local.common_tags,
+    {
+       Name = "${var.project_name}-db-credentials"
+    }
+  )
+}
+
+
+##Putting the pass in the safe
+
+resource "aws_secretsmanager_secret_version" "db_credentials" {
+  secret_id = aws_secretsmanager_secret.db_credentials.id
+  secret_string = jsonencode({
+    username = var.db_username
+    password = random_password.db_password.result
+    engine = "mysql"
+    host = aws_db_instance.mysql.endpoint
+    port = 3306
+    dbname = "appdb"
+  })
+}
 
 ##RDS definiton
 resource "aws_db_instance" "mysql" {
@@ -25,7 +56,7 @@ resource "aws_db_instance" "mysql" {
 
     db_name = "appdb"
     username = var.db_username
-    password = var.db_password
+    password = random_password.db_password.result
 
     tags = merge( local.common_tags,
     {
