@@ -42,7 +42,7 @@ resource "aws_secretsmanager_secret_version" "db_credentials" {
 
 ##RDS definiton
 resource "aws_db_instance" "mysql" {
-    identifier = "${var.project_name}-rds"
+    identifier = "${var.project_name}"
     engine = "mysql"
     engine_version = "8.0"
     instance_class = "db.t3.micro"
@@ -99,3 +99,61 @@ resource "aws_db_subnet_group" "main" {
     )
 }
 
+
+##ElasticCache Redis Subnet Group
+resource "aws_elasticache_subnet_group" "redis" {
+  name  = "${var.project_name}-redis-subnet"
+  subnet_ids = var.private_subnet_ids
+
+  tags = merge(
+    local.common_tags,{
+         Name = "${var.project_name}-redis-subnet "
+    }
+  )
+}
+
+##Redis Security Group
+resource "aws_security_group" "redis" {
+   name = "${var.project_name}-redis-sg"
+   description = "Security grourp for Redis"
+   vpc_id  = var.vpc_id
+
+
+
+  ingress { 
+     description  = "Redis port from VPC"
+     from_port = 6379
+     to_port = 6379
+     protocol = "tcp"
+     cidr_blocks = [var.vpc_cidr]
+  }
+
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow all outbound"
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project_name}-redis-sg"
+    }
+  )
+}
+
+##Elasticcache Redis Center
+
+resource "aws_elasticachecluster" "redis" {
+  cluster_id = "${var.project_name}-redis"
+  engine = "redis"
+  node_type = "cache.t3.micro"
+  num_cache_nodes = 1
+  parameter_group_name = "default.redis7"
+  port = 6379
+  subnet_group_name = aws_elasticcache_subnet+group.redis.name
+  security_group_ids = [aws_security_group.redis.id]
+
+}
