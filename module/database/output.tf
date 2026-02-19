@@ -23,3 +23,14 @@ output "db_secret_arn" {
     description = "ARN of the database secret_credentials for future refrencing"
     value = aws_secretsmanager_secret.db_credentials.arn
 }
+
+
+output "redis_endpoint" {
+    description = "Redis cache endpoint"
+    value = aws_elasticache_cluster.redis.cache_nodes[0].address
+}
+
+output "redis_port" {
+    description = "Redis port"
+    value = aws_elasticache_cluster.redis.port
+}
