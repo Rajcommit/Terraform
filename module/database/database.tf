@@ -160,7 +160,7 @@ resource "aws_elasticache_cluster" "redis" {
   tags = merge(
     local.common_tags,
     {
-      Name = "${var.project_name}-redis-cache"
+      Name = "${var.project_name}-continue to redis-cache"
     }
   )
 
