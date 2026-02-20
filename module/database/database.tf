@@ -11,12 +11,19 @@ locals {
 resource "random_password" "db_password" {
     length = 16
     special = true
+    override_special = "!#$%&*()-_=+[]{}<>:?"  # No /, @, ", space
 }
 
 ##Storing credentials in Secret Manager
 
 resource "aws_secretsmanager_secret" "db_credentials" {
-  name = "${var.project_name}-db-credentials"
+  name = "${var.project_name}-db-credentials-v2"
+  recovery_window_in_days =  0 ##Immediate Deletion (no 30 days wait)
+
+  lifecycle {
+    #If secret name conflicts, CREATE newone first , then delte old
+    create_before_destroy = true
+  }
   tags = merge(
     local.common_tags,
     {
