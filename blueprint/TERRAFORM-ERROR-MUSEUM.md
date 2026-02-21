@@ -741,3 +741,186 @@ terraform validate
 ---
 
 *"Every error is a lesson. Every fix is progress. Every mistake makes you stronger."*
+
+---
+
+## 🔥 NEW SESSION ERRORS (Feb 20, 2026)
+
+### Error #16: Deprecated GitHub Artifact Action Version
+**Date**: 2026-02-20  
+**File**: `.github/workflows/terraform.yml`
+
+**Error Message**:
+```
+This request has been automatically failed because it uses a deprecated
+version of actions/download-artifact: v3
+```
+
+**Why It Failed**:
+- GitHub deprecated `download-artifact@v3` for this usage.
+
+**Fix**:
+```yaml
+uses: actions/download-artifact@v4
+```
+
+**Prevention**:
+- Periodically review Actions dependency versions.
+- Prefer `@v4` for upload/download artifact actions.
+
+---
+
+### Error #17: Artifact Not Found (`tfplan`)
+**Date**: 2026-02-20  
+**File**: `.github/workflows/terraform.yml`
+
+**Error Message**:
+```
+Unable to download artifact(s): Artifact not found for name: tfplan
+No files were found with the provided path: modules/tfplan
+```
+
+**Why It Failed**:
+- Plan created at repo root: `terraform plan -out=tfplan`
+- Workflow tried uploading `modules/tfplan` (wrong path).
+
+**Fix**:
+```yaml
+path: tfplan
+```
+
+**Prevention**:
+- Keep output file path and artifact upload path identical.
+- Verify with `pwd` + generated file location in CI.
+
+---
+
+### Error #18: Secrets Manager Name Scheduled-for-Deletion Conflict
+**Date**: 2026-02-20  
+**File**: `module/database/database.tf`
+
+**Error Message**:
+```
+InvalidRequestException: You can't create this secret because a secret with this
+name is already scheduled for deletion.
+```
+
+**Why It Failed**:
+- Secret name was fixed and already reserved in AWS due to pending deletion.
+
+**Fix Applied in Session**:
+- Changed secret name target to a new suffix (`-v2`) to avoid collision.
+
+**Alternative Fixes**:
+- Restore existing secret before reuse.
+- Force-delete the pending secret and recreate.
+- Use `name_prefix` strategy to avoid hard collisions.
+
+**Prevention**:
+- Avoid strict fixed names when repeated create/destroy cycles are expected.
+
+---
+
+### Error #19: RDS Master Password Invalid Character Set
+**Date**: 2026-02-20  
+**File**: `module/database/database.tf`
+
+**Error Message**:
+```
+InvalidParameterValue: MasterUserPassword is not a valid password.
+Only printable ASCII characters besides '/', '@', '"', ' ' may be used.
+```
+
+**Why It Failed**:
+- Random password included disallowed characters for RDS.
+
+**Fix**:
+```hcl
+resource "random_password" "db_password" {
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+```
+
+**Prevention**:
+- Constrain password special chars to service-specific allowed set.
+
+---
+
+### Error #20: HCP Terraform Destroy with Saved Plan Discarded
+**Date**: 2026-02-20  
+**File**: `.github/workflows/terraform-destroy.yml`
+
+**Error Message**:
+```
+Error: Saved plan is discarded
+The given plan file can no longer be applied...
+```
+
+**Why It Failed**:
+- Workflow split destroy into:
+  - `plan -destroy -out=tfdestroy` in one job
+  - `apply tfdestroy` in another job
+- In HCP Terraform remote execution, saved plan handoff can be invalidated/discarded.
+
+**Fix**:
+- Removed saved destroy-plan artifact handoff.
+- Updated workflow pattern:
+  - prepare job: `terraform plan -destroy`
+  - approved apply job: `terraform destroy -auto-approve`
+
+**Prevention**:
+- For HCP remote runs, avoid cross-job apply of local saved plan files.
+
+---
+
+## ✅ New Operational Practices Added
+
+- Always live-watch runs after push:
+```bash
+gh run watch <run-id> --log
+```
+- For manual destroy:
+```bash
+gh workflow run "Terraform Destroy" -f confirm_destroy=DESTROY -f reason="cleanup"
+```
+- Kiro resume syntax reminder:
+```bash
+kiro-cli chat --agent terraform-teacher --resume
+```
+
+---
+
+## 🧭 Session Process Learnings (Feb 20, 2026)
+
+### Write Approval Rule (Collaboration Safety)
+- Read-only actions can run without pause.
+- Any file write/delete action must be explicitly approved first.
+- If accidental edits happen, restore user state before continuing.
+
+### HCP Terraform Destroy Strategy
+- In HCP remote mode, avoid applying saved plan artifacts across CI jobs.
+- Preferred pattern:
+  - `terraform plan -destroy` (preview)
+  - protected manual approval
+  - `terraform destroy -auto-approve` (execution)
+
+### GitHub Actions Triage Routine
+- First check run summary:
+```bash
+gh run view <run-id>
+```
+- Then isolate failing steps:
+```bash
+gh run view <run-id> --log-failed
+```
+- Confirm fix by rerun + live watch:
+```bash
+gh run watch <run-id> --log
+```
+
+---
+
+**Updated**: 2026-02-20  
+**Total Errors Documented**: 20
