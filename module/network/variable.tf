@@ -37,8 +37,8 @@ variable "public_subnet_cidr" {
   default     = ["10.2.0.0/24", "10.2.1.0/24"]
 
   validation {
-    condition =can(cidrhost(var.public_subnet_cidr,0))
-    error_message = "VPC CIDR must ve valid IPv4 CIDR notations."
+    condition =can(cidrhost(var.public_subnet_cidr) >= 2)
+    error_message = "Must provide at least 2 public subnets for high availability."
   }
 }
 
