@@ -14,7 +14,7 @@ variable "vpc_cidr" {
   default     = "10.2.0.0/16"
   
   validation {
-    condition     = can(cidrhost(var.public_subnet_cidr, 0))
+    condition     = can(cidrhost(var.vpc_cidr, 0))
     error_message = "Public subnet CIDR must be valid IPv4 CIDR notation."
   }
 }
@@ -37,7 +37,7 @@ variable "public_subnet_cidr" {
   default     = ["10.2.0.0/24", "10.2.1.0/24"]
 
   validation {
-    condition =can(cidrhost(var.vpc_cidr,0))
+    condition =can(cidrhost(var.public_subnet_cidr,0))
     error_message = "VPC CIDR must ve valid IPv4 CIDR notations."
   }
 }
@@ -48,7 +48,7 @@ variable "private_subnet_cidr" {
   default     = ["10.2.10.0/24", "10.2.11.0/24"]
 
   validation {
-    condition = length(var.private_subnet_cidrs) >=2
+    condition = length(var.private_subnet_cidr) >=2
     error_message = "Must provide at least 2 private subnets."
   }
 }
