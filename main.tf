@@ -4,6 +4,7 @@ terraform {
     workspaces {
       name = "Terraform_cli"
     }
+
   }
 
   required_providers {
@@ -23,7 +24,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-south-1"
+  region     = "ap-south-1"
+  retry_mode = "adaptive"
 }
 
 module "network" {
@@ -69,10 +71,10 @@ module "autoscalling" {
 
 
 module "database" {
-  source = "./module/database"
-  project_name = "miniserver-rds"
-  environment = var.environment
-  vpc_id = module.network.vpc_id
-  vpc_cidr = module.network.vpc_cidr
+  source             = "./module/database"
+  project_name       = "miniserver-rds"
+  environment        = var.environment
+  vpc_id             = module.network.vpc_id
+  vpc_cidr           = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_ids
 }

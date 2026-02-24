@@ -28,6 +28,7 @@ desktop.ini
 
 # Kiro files
 .kiro/
+.kiro/venv/
 
 # Test files
 *.txt
@@ -70,6 +71,7 @@ blueprint/EARLY_SESSIONS_SUMMARY.md
 blueprint/FUTUREPLAN.md
 blueprint/PROJECT_HISTORY.md
 blueprint/README.md
+blueprint/DOCKER-DESKTOP-ISSUE-FEB14.md
 
 # VCS workflow documentation (exclude from repo)
 VCS-QUICK-REF.md
@@ -91,10 +93,5 @@ logs/
 terraform-provider-aws/
 modules/blueprint/undertanding.md
 modules/manoranana/
-modules/blueprint/undertanding.md
-modules/manoranana/
-blueprint/undertanding.md
 blueprint/undertanding.md
 manoranana
-manoranana
-

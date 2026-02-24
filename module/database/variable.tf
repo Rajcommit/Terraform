@@ -29,6 +29,10 @@ variable "db_username" {
     description = "Database master username"
     type = string
     default = "dbadmin"
+    validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9_]{2,15}$", var.db_username))
+    error_message = "Username must start with letter, 3-16 chars, alphanumeric + underscore."
+  }
 }
 
 # variable "db_password" {
@@ -37,3 +41,4 @@ variable "db_username" {
 #     sensitive = true
 #     default     = "ChangeMe123!"
 # }
+
