@@ -14,8 +14,8 @@ variable "vpc_cidr" {
   default     = "10.2.0.0/16"
   
   validation {
-    condition     = can(cidrhost(var.vpc_cidr, 0))
-    error_message = "VPC CIDR must be valid IPv4 CIDR notation."
+    condition     = can(cidrhost(var.public_subnet_cidr, 0))
+    error_message = "Public subnet CIDR must be valid IPv4 CIDR notation."
   }
 }
 
@@ -48,8 +48,8 @@ variable "private_subnet_cidr" {
   default     = ["10.2.10.0/24", "10.2.11.0/24"]
 
   validation {
-    condition = length(var.public_subnet_cidrs) >=2
-    error_message = "Must provide at least 2 public subnet for HA"
+    condition = length(var.private_subnet_cidrs) >=2
+    error_message = "Must provide at least 2 private subnets."
   }
 }
 
