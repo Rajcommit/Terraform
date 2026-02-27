@@ -1,3 +1,8 @@
+variable "project_name" {
+  description = "value to be used as prefix for all resources"
+  type        = string
+}
+
 variable "environment" {
   description = "The deployment environment (e.g., dev, staging, prod)"
   type        = string
@@ -28,3 +33,4 @@ variable "alb_security_group_id" {
   description = "The ID of the security group for the Application Load Balancer"
   type        = string
 }
+

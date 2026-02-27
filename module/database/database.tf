@@ -8,6 +8,14 @@ locals {
   }
 }
 
+locals {
+  db_params = ["max_connections", "shared_buffers"]
+  db_values = ["100", "256MB"]
+  db_settings = zipmap(local.db_params, local.db_values)
+}
+
+
+
 resource "random_password" "db_password" {
     length = 16
     special = true
@@ -78,11 +86,22 @@ resource "aws_db_instance" "mysql" {
 resource "aws_db_parameter_group" "mysql" {
    name = "${var.project_name}-mysql-params"
    family = "mysql8.0"
+
+  ##Adding zipmap locals HERE 
+  #Dynamic block goes here 
+  dynamic "parameter" {
+  for_each = local.db_settings
+  content {
+    name = parameter.key
+    value = parameter.value
+
+     }
+  }
    
-   parameter {
-     name = "max_connections"
-     value = "50"
-   }
+  #  parameter {
+  #    name = "max_connections"
+  #    value = "50"
+  #  }
 
    tags = merge(
       local.common_tags,
@@ -90,7 +109,9 @@ resource "aws_db_parameter_group" "mysql" {
          Name = "${var.project_name}-mysql-params"
       }
    )
+
 }
+
 
 
 ##RDS Subnet Group
@@ -172,3 +193,4 @@ resource "aws_elasticache_cluster" "redis" {
   )
 
 }
+

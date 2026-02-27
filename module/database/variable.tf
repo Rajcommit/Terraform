@@ -35,6 +35,16 @@ variable "db_username" {
   }
 }
 
+
+variable "instance_class" {
+    type = string
+    default = "db.t3.micro"
+  validation {
+    condition =var.instance_class == "db.t3.micro"
+    error_message = "🚨 FREE TIER: Only db.t3.micro allowed. Current: ${var.instance_class}"
+  }
+}
+
 # variable "db_password" {
 #     description = "Database master password"
 #     type = string
@@ -42,3 +52,21 @@ variable "db_username" {
 #     default     = "ChangeMe123!"
 # }
 
+
+variable "free_tier_mode" {
+    type = bool
+    default = true
+    description = "Enable free compliance checks"
+}
+
+
+variable "free_tier_enforcement" {
+    type = string
+    default = "enforce"
+    description = "enforce or warn"
+
+    validation {
+        condition = contains(["enforce", "warn"], var.free_tier_enforcement)
+        error_message = "Must be 'enforce' or 'warn'"
+    }
+}

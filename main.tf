@@ -47,6 +47,7 @@ module "loadbalancer" {
 
 module "compute" {
   source                = "./module/compute"
+  project_name          = "miniserver"
   environment           = var.environment
   instance_count        = 1
   subnet_ids            = module.network.private_subnet_ids
@@ -60,6 +61,7 @@ module "compute" {
 module "autoscalling" {
   source                = "./module/autoscaling"
   project_name          = "miniserver"
+  environment           = var.environment 
   ami_id                = module.compute.ami_id
   instance_type         = "t3.micro"
   instance_profile_name = module.compute.instance_profile_name
@@ -67,6 +69,12 @@ module "autoscalling" {
   user_data             = module.compute.user_data
   subnet_ids            = module.network.private_subnet_ids
   target_group_arn      = module.loadbalancer.target_group_arn
+
+  # ##  Adding the lines
+
+  # min_size  = 1
+  # max_size  = 2
+  # desired_capacity = 2
 }
 
 

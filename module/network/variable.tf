@@ -55,6 +55,7 @@ variable "private_subnet_cidr" {
 
 variable "nat_gateway_enabled" {
   description = "Flag to enable or disable NAT Gateway"
+  
   type        = bool
   default     = true
 }

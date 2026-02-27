@@ -1,0 +1,8 @@
+.kiro/
+.archive/
+.git/
+.github/
+blueprint/
+*.md
+*.log
+*.backup

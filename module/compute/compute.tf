@@ -10,6 +10,11 @@ locals {
     Owner       = "Raj"
     CreatedAt   = formatdate("YYYY-MM-DD", timestamp())
   }
+
+# Add zipmap for ports
+ services = ["ssh", "https"]
+ ports = [22, 443]
+ service_ports = zipmap(local.services, local.ports)
 }
 
 
@@ -18,7 +23,7 @@ data "aws_ami" "my_ami" {
   most_recent = true
   owners      = ["amazon"]
 
-  filter {
+filter {
     name   = "name"
     values = ["al2023-ami-2023.*-x86_64"]
   }
@@ -70,18 +75,29 @@ resource "aws_instance" "miniserver" {
 }
 
 resource "aws_security_group" "miniserver_sg" {
-  name        = "miniserver-sg"
+  name        = "${var.project_name}-sg"
   description = "Security group for miniserver instances"
   vpc_id      = var.vpc_id
 
-  # SSH - open to all
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "SSH Access"
+  #Dynamic rules drom zipmap (SSH +HTTPS)
+  dynamic "ingress" {
+    for_each = local.service_ports
+    content {
+      from_port = ingress.value
+      to_port = ingress.value
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "${ingress.key} Access"
+    }
   }
+  # # SSH - open to all
+  # ingress {
+  #   from_port   = 22
+  #   to_port     = 22
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  #   description = "SSH Access"
+  # }
 
   # HTTP - only from ALB
   ingress {
@@ -92,18 +108,18 @@ resource "aws_security_group" "miniserver_sg" {
     description     = "HTTP Access from ALB"
   }
 
-  # HTTPS - open to all
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "HTTPS Access"
-  }
+  # # HTTPS - open to all
+  # ingress {
+  #   from_port   = 443
+  #   to_port     = 443
+  #   protocol    = "tcp"
+  #   cidr_blocks = ["0.0.0.0/0"]
+  #   description = "HTTPS Access"
+  # }
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "-1" 
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic"
   }
