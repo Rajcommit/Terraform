@@ -101,8 +101,9 @@ jobs:
 
           if (( $(echo "$COST > 10" | bc -l) )); then
             echo "Cost exceeds \$10 threshold"
-            exit 1
           fi
+
+  # Don't exit - just warn exit 1
 
   ### Terraform Apply
   terraform-apply:

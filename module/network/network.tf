@@ -71,6 +71,7 @@ resource "aws_internet_gateway" "maingateway" {
 
 ##NAT Gateway Creation
 resource "aws_eip" "elastic_ip" {
+  count  = var.nat_gateway_enabled ? 1 : 0
   domain = "vpc"
   tags = merge(
     local.common_tags,
@@ -82,6 +83,7 @@ resource "aws_eip" "elastic_ip" {
 
 ##NAT Gateway Creation
 resource "aws_nat_gateway" "main" {
+  count = var.nat_gateway_enabled ? 1 : 0 
   allocation_id = aws_eip.elastic_ip.id
   subnet_id     = aws_subnet.public[0].id
   tags = merge(
@@ -140,5 +142,15 @@ resource "aws_route_table_association" "private_association" {
   route_table_id = aws_route_table.private.id
 
 }
+
+
+# Add NAT Gateway toggle
+
+variable "enable_nat_gateway" {
+  description = "Enable NAT Gateway (costs $40.88/month)"
+  type        = bool
+  default     = true  # Set false to save money
+}
+
 
 
