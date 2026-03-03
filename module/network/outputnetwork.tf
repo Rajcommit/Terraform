@@ -25,7 +25,7 @@ output "private_subnet_ids" {
 }
 
 output "nat_gateway_id" {
-  value = aws_nat_gateway.main.id
+  value = var.nat_gateway_enabled ? aws_nat_gateway.main[0].id : null
 }
 
 output "internet_gateway_id" {
