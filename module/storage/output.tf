@@ -18,3 +18,4 @@ output "efs_arn" {
   description = "EFS ARN"
   value       = aws_efs_file_system.shared_storage.arn
 }
+

@@ -57,3 +57,27 @@ resource "aws_security_group_rule" "efs_egress" {
   security_group_id = aws_security_group.efs.id
   description       = "Allow all outbound"
 }
+
+
+resource "aws_efs_access_point" "shared_storage_ap" {
+    file_system_id = aws_efs_file_system.shared_storage.id
+    posix_user {
+      uid = 1000
+      gid = 1000
+    }
+    root_directory {
+       path = "/app"
+       creation_info {
+       owner_uid = 1000
+       owner_gid = 1000
+       permissions = "755"
+       }
+    }
+    tags = merge(
+        var.common_tags,
+        {
+         Name = "${var.project_name}-efs-ap"
+         Purpose = "Access point for ASG instances to mount EFS"
+        }
+    )
+}
