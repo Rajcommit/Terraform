@@ -86,3 +86,16 @@ module "database" {
   vpc_cidr           = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_ids
 }
+
+
+module "monitoring" {
+  source = "./module/monitoring"
+  project_name = "miniserver"
+  environment = var.environment
+  alarm_email = "raj.vbeyond@gmail.com"
+  asg_name = module.autoscalling.asg_name
+  alb_arn_suffix = module.loadbalancer.alb_arn_suffix
+  target_group_arn_suffix = module.loadbalancer.target_group_arn_suffix
+  redis_cluster_id = module.database.redis_cluster_id
+  db_instance_id = module.database.db_instance_id
+}

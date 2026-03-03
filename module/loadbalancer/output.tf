@@ -35,3 +35,9 @@ output "alb_arn_suffix" {
   description = "ARN suffix for ALB used in CloudWatch alarm dimensions"
   value       = aws_lb.application_load_balancer.arn_suffix
 }
+
+
+output "target_group_arn_suffix" {
+  description = "Target Group ARN suffix for CloudWatch metrics"
+  value = aws_lb_target_group.app_target_group.arn_suffix
+}

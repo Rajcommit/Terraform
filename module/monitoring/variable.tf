@@ -12,7 +12,7 @@ variable "environment" {
 variable "alarm_email" {
   description = "Email address to send monitoring alarms"
   type        = string
-  default = "raj.vbeond@gmail.com"
+  default = "raj.vbeyond@gmail.com"
 }
 
 
@@ -52,11 +52,16 @@ variable "disk_threshold" {
     type        = number
     default     = 80
 }
+
+variable "redis_threshold" {
+  description = "Redis memory usage threshold for triggering alarms"
+  type        = number
+  default     = 80
+}
 variable "redis_cluster_id" {
   description = "Redis cluster identifier"
   type        = string
 }
-
 
 variable "db_instance_id" {
   description = "RDS instance identifier"
@@ -64,8 +69,3 @@ variable "db_instance_id" {
 }
 
 
-variable "redis_threshold" {
-  description = "Redis memory usage threshold for triggering alarms"
-  type        = number
-  default     = 80
-}
