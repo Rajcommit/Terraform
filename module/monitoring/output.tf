@@ -12,3 +12,10 @@ output "alarm_names" {
     aws_cloudwatch_metric_alarm.redis_high_memory.alarm_name
   ]
 }
+
+
+output "sns_topic_arn" {
+  description = "ARN of SNS topic for alarm notifications"
+  value       = aws_sns_topic.alarms.arn
+  
+}

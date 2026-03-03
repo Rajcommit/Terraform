@@ -34,3 +34,14 @@ output "redis_port" {
     description = "Redis port"
     value = aws_elasticache_cluster.redis.port
 }
+
+
+output "db_instance_id" {
+    description = "RDS instance identifier for future reference"
+    value = aws_db_instance.mysql.id
+}
+
+output "redis_cluster_id" {
+    description = "Redis cluster identifier for future reference"
+    value = aws_elasticache_cluster.redis.id
+}
