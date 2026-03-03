@@ -28,6 +28,16 @@ provider "aws" {
   retry_mode = "adaptive"
 }
 
+# Common tags applied to all resources across all modules
+locals {
+  common_tags = {
+    Environment = var.environment
+    ManagedBy   = "Terraform"
+    Project     = "MiniServer"
+    Owner       = "Raj"
+  }
+}
+
 module "network" {
   source       = "./module/network"
   environment  = var.environment
@@ -98,4 +108,16 @@ module "monitoring" {
   target_group_arn_suffix = module.loadbalancer.target_group_arn_suffix
   redis_cluster_id = module.database.redis_cluster_id
   db_instance_id = module.database.db_instance_id
+}
+
+
+module "storage" {
+  source = "./module/storage"
+
+  project_name = "miniserver"
+  environment = var.environment
+  vpc_id = module.network.vpc_id
+  vpc_cidr = module.network.vpc_cidr
+  private_subnet_ids = module.network.private_subnet_ids
+  common_tags = local.common_tags
 }
