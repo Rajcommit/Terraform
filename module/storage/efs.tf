@@ -1,15 +1,4 @@
-locals {
-  common_tags = {
-    Environment = var.environment
-    ManagedBy   = "Terraform"
-    Project     = "HomeNas"
-    Owner       = "Raj"
-    CreatedAt   = formatdate("YYYY-MM-DD", timestamp())
-  }
-}
-
-
-
+# File: /mnt/s/terraform/modules/module/storage/efs.tf
 # Purpose: Shared file system for Docker configs
 # Related: compute module (mounts this), main.tf (calls this)
 
@@ -18,7 +7,7 @@ resource "aws_efs_file_system" "shared_storage" {
   encrypted      = true
   
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
        Name = "${var.project_name}-efs"
        Purpose = "Docker configs and shared data"
@@ -40,7 +29,7 @@ resource "aws_security_group" "efs" {
     vpc_id = var.vpc_id
 
     tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
        Name = "${var.project_name}-efs-sg"
        Purpose = "Docker configs and shared data"
