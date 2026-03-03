@@ -31,6 +31,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
     comparison_operator = "GreaterThanThreshold"
     evaluation_periods = 2
     metric_name = "UnhealthyHostCount"
+    statistic = "Average"
     namespace = "AWS/ApplicationELB"
     period = 300
     threshold = 1 ## Alarm will trigger if there is at least 1 unhealthy host
@@ -47,6 +48,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
 resource "aws_cloudwatch_metric_alarm" "rds_high_cpu" {
     alarm_name = "${var.project_name}-rds-high-cpu"
     comparison_operator = "GreaterThanOrEqualToThreshold"
+    statistic = "Average"
     evaluation_periods = 2
     metric_name = "CPUUtilization"
     namespace = "AWS/RDS"
