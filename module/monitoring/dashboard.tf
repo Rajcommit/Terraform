@@ -21,14 +21,15 @@ resource "aws_cloudwatch_dashboard" "main" {
                         # Format: [namespace, metric_name, dimension_name, dimension_values, ...]
                         ["AWS/EC2", "CPUUtilization", "AutoScalingGroupName", var.asg_name, {
                             stat = "Average"
-                            lablel = "ASG CPU Utilization"
-                        }]
+                            label = "ASG CPU Utilization"
+                        }
+                        ]
                     ]
                 # HOW OFTEN to chcek the metric
-                   period = 300 ## 5 minutes
+                    period = 300 ## 5 minutes
                    
                 # What Region to pull the metric from
-                   region = "ap-south-1"
+                    region = "ap-south-1"
                 
                 # Additional display options for the widget
                     title = "Auto Scaling Group - CPU Usage"
@@ -51,7 +52,7 @@ resource "aws_cloudwatch_dashboard" "main" {
                 x = 0       # Start at the leftmost column
                 y = 0       # Start at the top row
             }
-            # Additional widgets can be added here to monitor other metrics, such as ALB unhealthy hosts, RDS CPU utilization, etc. Each widget would follow a similar structure but with different metrics and properties.
+     # Additional widgets can be added here to monitor other metrics, such as ALB unhealthy hosts, RDS CPU utilization, etc. Each widget would follow a similar structure but with different metrics and properties.
     ]
     })
   }

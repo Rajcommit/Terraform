@@ -36,6 +36,7 @@ resource "aws_secretsmanager_secret" "db_credentials" {
     local.common_tags,
     {
        Name = "${var.project_name}-db-credentials"
+       Purpose = "Application data"
     }
   )
 }
