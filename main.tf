@@ -60,6 +60,7 @@ module "compute" {
   project_name          = "miniserver"
   environment           = var.environment
   instance_count        = 1
+  efs_dns_name          = module.storage.efs_dns_name
   subnet_ids            = module.network.private_subnet_ids
   alb_security_group_id = module.loadbalancer.alb_security_group_id
   vpc_id                = module.network.vpc_id
@@ -119,5 +120,14 @@ module "storage" {
   vpc_id = module.network.vpc_id
   vpc_cidr = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_ids
+  common_tags = local.common_tags
+}
+
+
+module "ecr" {
+  source = "./module/ecr"
+
+  project_name = "miniserver"
+  app_name = "node-app"
   common_tags = local.common_tags
 }

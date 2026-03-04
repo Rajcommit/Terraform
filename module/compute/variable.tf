@@ -34,3 +34,7 @@ variable "alb_security_group_id" {
   type        = string
 }
 
+variable "efs_dns_name" {
+  description = "The DNS name of the EFS file system for mounting"
+  type        = string
+}
