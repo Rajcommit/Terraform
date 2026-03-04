@@ -48,7 +48,24 @@ resource "aws_instance" "miniserver" {
               mkdir -p /mnt/efs
               mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
               ##Installing Apache Web Server
-              yum install httpd -y
+
+              
+
+
+
+              ##INSTALLING DOCKER
+              yum install -y docker
+              systemctl start -y docker
+              systemctl quick-enable docker
+              
+
+
+            
+              ##Login to ECR and pull Docker image
+              aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
+              docker pull ${var.ecr_registry}/miniserver-node-app:latest
+              docker run -d -p 3000:3000 --name miniserver-app ${var.ecr_registry}/miniserver-node-app:latest
+
 
               #Creataing a simple webpage
               echo "<html><body><h1>Welcome to MiniServer Instance ${count.index + 1} in ${var.environment} Environment</h1></body></html>" > /var/www/html/index.html
@@ -134,5 +151,4 @@ resource "aws_security_group" "miniserver_sg" {
       Name = "${var.project_name}-miniserver-sg"
     }
   )
-}
 
