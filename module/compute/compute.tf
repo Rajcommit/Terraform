@@ -43,6 +43,10 @@ resource "aws_instance" "miniserver" {
               #!/bin/bash
               ##Updating System here
               yum update -y
+              ##Attaching the efs here for persistent storage
+              yum install -y amazon-efs-utils
+              mkdir -p /mnt/efs
+              mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
               ##Installing Apache Web Server
               yum install httpd -y
 
@@ -69,7 +73,7 @@ resource "aws_instance" "miniserver" {
   tags = merge(
     local.common_tags,
     {
-      Name = "${var.environment}-miniserver-${count.index + 1}"
+      Name = "${var.project_name}-miniserver-${count.index + 1}"
     }
   )
 }
@@ -127,7 +131,8 @@ resource "aws_security_group" "miniserver_sg" {
   tags = merge(
     local.common_tags,
     {
-      Name = "${var.environment}-miniserver-sg"
+      Name = "${var.project_name}-miniserver-sg"
     }
   )
 }
+

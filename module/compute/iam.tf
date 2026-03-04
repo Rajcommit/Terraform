@@ -1,6 +1,6 @@
 # IAM Role for EC2 instances
 resource "aws_iam_role" "miniserver_role" {
-  name = "${var.environment}-miniserver-role"
+  name = "${var.project_name}-miniserver-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,7 +16,7 @@ resource "aws_iam_role" "miniserver_role" {
   tags = merge(
     local.common_tags,
     {
-      Name = "${var.environment}-miniserver-role"
+      Name = "${var.project_name}-miniserver-role"
     }
   )
 }
@@ -35,7 +35,7 @@ resource "aws_iam_role_policy_attachment" "cloudwatch" {
 
 # Instance Profile (connects role to EC2)
 resource "aws_iam_instance_profile" "miniserver_profile" {
-  name = "${var.environment}-miniserver-profile"
+  name = "${var.project_name}-miniserver-profile"
   role = aws_iam_role.miniserver_role.name
 
   tags = local.common_tags
@@ -58,3 +58,24 @@ resource "aws_iam_instance_profile" "miniserver_profile" {
 # output "iam_arn" { 
 #     value = aws_iam_user.roxy_user[*].arn
 #     }
+
+
+##ECR Pull Policy  (for Docker images)
+resource "aws_iam_role_policy" "ecr_pull_policy" {
+  name = "${var.project_name}-ecr-pull-policy"
+  role = aws_iam_role.miniserver_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+      ]
+      Resource = "*"
+    }]
+  })
+}

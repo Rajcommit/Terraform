@@ -104,3 +104,6 @@ module/architecture
 
 ##AI_Agent_fix
 Kirofix.md
+
+# Local module copy to keep out of git
+module/assignment-3/
