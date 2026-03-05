@@ -14,14 +14,28 @@ on:
         description: "Why are you building?"
         required: true
         type: string
+  workflow_call:
+   ##This allows other workflows to call this one, for example terraform workflow can call this to build and push the image before applying the infrastructure changes.
+    outputs:
+      image_tag:
+        description: "The tag of the built Docker image"
+        value: ${{ steps.build-and-push.outputs.image_tag }}
+      
+
+
+
 jobs:
   build-and-push-to-ecr:
     # Push builds run only if commit message contains [build-image].
     # Manual dispatch still requires confirm_build == BUILD.
     if: |
+      github.event_name == 'workflow_call' ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[build-image]')) ||
       (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_build == 'BUILD')
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.build-and-push.outputs.image_tag }}
+      image_uri: ${{ steps.build-and-push.outputs.image_uri }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,6 +49,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
       - name: Build, tag, and push Docker images to ECR
+        id: build-and-push
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: miniserver-node-app
@@ -45,3 +60,8 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          
+          # Export outputs for workflow_call
+          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "✅ Built and pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"

@@ -9,8 +9,8 @@ locals {
 }
 
 locals {
-  db_params = ["max_connections", "shared_buffers"]
-  db_values = ["100", "256MB"]
+  db_params = ["max_connections"]
+  db_values = ["100"]
   db_settings = zipmap(local.db_params, local.db_values)
 }
 

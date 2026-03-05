@@ -45,3 +45,5 @@ output "redis_cluster_id" {
     description = "Redis cluster identifier for future reference"
     value = aws_elasticache_cluster.redis.id
 }
+
+#
