@@ -51,8 +51,9 @@ resource "aws_instance" "miniserver" {
 
               ##INSTALLING DOCKER
               yum install -y docker
-              systemctl start -y docker
-              systemctl quick-enable docker
+              systemctl start docker
+              systemctl enable docker
+              usermod -aG docker ec2-user
 
               ##Login to ECR and pull Docker image
               aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
