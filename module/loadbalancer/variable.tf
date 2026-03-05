@@ -35,7 +35,7 @@ variable "alb_ingress_cidr_blocks" {
 variable "target_group_port" {
   description = "The port on which the target group will receive traffic"
   type        = number
-  default     = 80
+  default     = 3000 ##Docker app port
 }
 
 ##creating the ALB

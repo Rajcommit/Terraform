@@ -49,23 +49,15 @@ resource "aws_instance" "miniserver" {
               mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
               ##Installing Apache Web Server
 
-              
-
-
-
               ##INSTALLING DOCKER
               yum install -y docker
               systemctl start -y docker
               systemctl quick-enable docker
-              
 
-
-            
               ##Login to ECR and pull Docker image
               aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
               docker pull ${var.ecr_registry}/miniserver-node-app:latest
               docker run -d -p 3000:3000 --name miniserver-app ${var.ecr_registry}/miniserver-node-app:latest
-
 
               #Creataing a simple webpage
               echo "<html><body><h1>Welcome to MiniServer Instance ${count.index + 1} in ${var.environment} Environment</h1></body></html>" > /var/www/html/index.html
@@ -85,6 +77,22 @@ resource "aws_instance" "miniserver" {
     volume_type           = "gp3"
     delete_on_termination = true
     encrypted             = false
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      mkdir -p ${path.module}/../../../logs
+      echo "=== NEW INSTANCE CREATED ===" >> ${path.module}/../../../logs/instances.log
+      echo "Instance ID: ${self.id}" >> ${path.module}/../../../logs/instances.log
+      echo "Private IP: ${self.private_ip}" >> ${path.module}/../../../logs/instances.log
+      echo "AZ: ${self.availability_zone}" >> ${path.module}/../../../logs/instances.log
+      echo "Type: ${self.instance_type}" >> ${path.module}/../../../logs/instances.log
+      echo "Created: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> ${path.module}/../../../logs/instances.log
+      echo "Status: RUNNING" >> ${path.module}/../../../logs/instances.log
+      echo "---" >> ${path.module}/../../../logs/instances.log
+    EOT
+
+    on_failure = continue
   }
 
   tags = merge(
@@ -122,8 +130,8 @@ resource "aws_security_group" "miniserver_sg" {
 
   # HTTP - only from ALB
   ingress {
-    from_port       = 80
-    to_port         = 80
+    from_port       = 3000
+    to_port         = 3000  ## changed for docker port
     protocol        = "tcp"
     security_groups = [var.alb_security_group_id]
     description     = "HTTP Access from ALB"
@@ -151,4 +159,4 @@ resource "aws_security_group" "miniserver_sg" {
       Name = "${var.project_name}-miniserver-sg"
     }
   )
-
+}
