@@ -38,3 +38,16 @@ variable "efs_dns_name" {
   description = "The DNS name of the EFS file system for mounting"
   type        = string
 }
+
+
+
+variable "aws_region" {
+  description = "The AWS region"
+  type        = string
+}
+
+
+variable "ecr_registry"{
+  description = "ECR registry ID (account ID)"
+  type        = string
+}

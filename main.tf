@@ -64,7 +64,8 @@ module "compute" {
   subnet_ids            = module.network.private_subnet_ids
   alb_security_group_id = module.loadbalancer.alb_security_group_id
   vpc_id                = module.network.vpc_id
-
+  aws_region            = "ap-south-1"
+  ecr_registry          = module.ecr.repository_url
 }
 
 
