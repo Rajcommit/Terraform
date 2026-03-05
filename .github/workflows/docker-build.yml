@@ -29,12 +29,7 @@ on:
 
 jobs:
   build-and-push-to-ecr:
-    # Push builds run only if commit message contains [build-image].
-    # Manual dispatch still requires confirm_build == BUILD.
-    if: |
-      github.event_name == 'workflow_call' ||
-      (github.event_name == 'push' && contains(github.event.head_commit.message, '[build-image]')) ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_build == 'BUILD')
+    # Execution gating is handled by caller workflow (terraform.yml) or workflow_dispatch inputs.
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.build-and-push.outputs.image_tag }}
