@@ -29,12 +29,7 @@ on:
 
 jobs:
   build-and-push-to-ecr:
-    # Push builds run only if commit message contains [build-image].
-    # Manual dispatch still requires confirm_build == BUILD.
-    if: |
-      github.event_name == 'workflow_call' ||
-      (github.event_name == 'push' && contains(github.event.head_commit.message, '[build-image]')) ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.confirm_build == 'BUILD')
+    # Execution gating is handled by caller workflow (terraform.yml) or workflow_dispatch inputs.
     runs-on: ubuntu-latest
     outputs:
       image_tag: ${{ steps.build-and-push.outputs.image_tag }}
@@ -51,6 +46,12 @@ jobs:
       - name: Login to ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+      - name: Ensure ECR repository exists
+        env:
+          ECR_REPOSITORY: miniserver-node-app
+        run: |
+          aws ecr describe-repositories --repository-names "$ECR_REPOSITORY" >/dev/null 2>&1 || \
+          aws ecr create-repository --repository-name "$ECR_REPOSITORY" >/dev/null
       - name: Build, tag, and push Docker images to ECR
         id: build-and-push
         env:
