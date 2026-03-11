@@ -66,6 +66,8 @@ module "compute" {
   vpc_id                = module.network.vpc_id
   aws_region            = "ap-south-1"
   ecr_registry          = module.ecr.repository_url
+  s3_bucket_name    = module.backup.s3_bucket_name 
+  backup_policy_arn = module.backup.backup_policy_arn
 }
 
 
@@ -131,4 +133,20 @@ module "ecr" {
   project_name = "miniserver"
   app_name = "node-app"
   common_tags = local.common_tags
+}
+
+
+module "backup_retention_days" {
+  source = "./module/backup"
+
+  project_name = "miniserver"
+  environment = var.environment
+  common_tags  = local.common_tags
+  backup_tags = {
+    Pourpose = "Automated backups"
+    Backup = "true"
+  }
+  glacier_transition_days = 30
+  backup_retention_days = 365
+
 }
