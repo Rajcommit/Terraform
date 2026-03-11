@@ -128,9 +128,14 @@ jobs:
   ### Terraform Apply
   terraform-apply:
     name: Terraform Apply
-    needs: [docker-build, terraform-plan]
+    needs: [docker-build, terraform-plan, infracost-check]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && needs['terraform-plan'].result == 'success' && (needs['docker-build'].result == 'success' || needs['docker-build'].result == 'skipped')
+    if: |
+      github.ref == 'refs/heads/main'
+      && github.event_name == 'push' 
+      && needs['infracost-check'].result == 'success'  
+      && needs['terraform-plan'].result == 'success' 
+      && (needs['docker-build'].result == 'success' || needs['docker-build'].result == 'skipped')
     env:
       TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN}}
 
@@ -158,5 +163,5 @@ jobs:
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform plan
         #run: terraform apply -auto-approve tfplan

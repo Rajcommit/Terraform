@@ -79,3 +79,9 @@ resource "aws_iam_role_policy" "ecr_pull_policy" {
     }]
   })
 }
+
+
+resource "aws_iam_role_policy_attachment" "s3_backup" {
+  role       = aws_iam_role.miniserver_role.name
+  policy_arn = var.backup_policy_arn
+}

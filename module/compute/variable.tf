@@ -51,3 +51,13 @@ variable "ecr_registry"{
   description = "ECR registry ID (account ID)"
   type        = string
 }
+
+variable "backup_policy_arn" {
+  description = "ARN of the S3 backup policy"
+  type        = string
+}
+
+variable "s3_bucket_name" {
+  description = "S3 bucket name for backups"
+  type        = string
+}

@@ -15,7 +15,7 @@ on:
         required: true
         type: string
   workflow_call:
-   ##This allows other workflows to call this one, for example terraform workflow can call this to build and push the image before applying the infrastructure changes.
+    ##This allows other workflows to call this one, for example terraform workflow can call this to build and push the image before applying the infrastructure changes.
     outputs:
       image_tag:
         description: "The tag of the built Docker image"
@@ -23,9 +23,6 @@ on:
       image_uri:
         description: "The full image URI"
         value: ${{ jobs.build-and-push-to-ecr.outputs.image_uri }}
-      
-
-
 
 jobs:
   build-and-push-to-ecr:
@@ -64,8 +61,19 @@ jobs:
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-          
+
           # Export outputs for workflow_call
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
           echo "image_uri=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-          echo "✅ Built and pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo " Built and pushed: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Verify Docker image in ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: miniserver-node-app
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker pull $IMAGE_URI
+          echo "Successfully pulled $IMAGE_URI"
+          docker run --rm $IMAGE_URI node --version
+          echo "Successfully ran container from $IMAGE_URI"

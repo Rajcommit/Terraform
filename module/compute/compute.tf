@@ -20,13 +20,13 @@ locals {
 
 
 data "aws_ami" "my_ami" {
-  most_recent = true
-  owners      = ["amazon"]
+most_recent = true
+owners      = ["amazon"]
 
-filter {
-    name   = "name"
-    values = ["al2023-ami-2023.*-x86_64"]
-  }
+  filter {
+name   = "name"
+values = ["al2023-ami-2023.*-x86_64"]
+}
 }
 
 resource "aws_instance" "miniserver" {
@@ -38,46 +38,31 @@ resource "aws_instance" "miniserver" {
   vpc_security_group_ids = [aws_security_group.miniserver_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.miniserver_profile.name
 
-  #User Data to install Apache Web Server
-  user_data = <<-EOF
-              #!/bin/bash
-              ##Updating System here
-              yum update -y
-              ##Attaching the efs here for persistent storage
-              yum install -y amazon-efs-utils
-              mkdir -p /mnt/efs
-              mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
-              ##Installing Apache Web Server
+# Cloud-init user data
+   user_data = templatefile("${path.module}/scripts/cloud-init.yaml", {
+    instance_number = count.index + 1
+    environment     = var.environment
+    aws_region      = var.aws_region
+    efs_dns_name    = var.efs_dns_name
+    s3_bucket_name  = var.s3_bucket_name
+    ecr_registry    = var.ecr_registry
+  })
 
-              ##INSTALLING DOCKER
-              yum install -y docker
-              systemctl start -y docker
-              systemctl quick-enable docker
-
-              ##Login to ECR and pull Docker image
-              aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
-              docker pull ${var.ecr_registry}/miniserver-node-app:latest
-              docker run -d -p 3000:3000 --name miniserver-app ${var.ecr_registry}/miniserver-node-app:latest
-
-              #Creataing a simple webpage
-              echo "<html><body><h1>Welcome to MiniServer Instance ${count.index + 1} in ${var.environment} Environment</h1></body></html>" > /var/www/html/index.html
-              echo "<p>Instance ID: $(ec2-metadata --instance-id | cut -d ' ' -f 2)</p>" >> /var/www/html/index.html
-
-              #starting Apache
-              systemctl start httpd
-              systemctl enable httpd
-              EOF
-  ##Enable detailed monitorting
   monitoring = true
 
-
-  ##Custom root volume
   root_block_device {
     volume_size           = 20
     volume_type           = "gp3"
     delete_on_termination = true
-    encrypted             = false
+    encrypted             = true  # Always encrypt!
   }
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project_name}-instance-${count.index + 1}"
+    }
+  )
 
   provisioner "local-exec" {
     command = <<-EOT
@@ -94,14 +79,73 @@ resource "aws_instance" "miniserver" {
 
     on_failure = continue
   }
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name = "${var.project_name}-miniserver-${count.index + 1}"
-    }
-  )
 }
+
+              #   <<-EOF
+              # #!/bin/bash
+              # ##Updating System here
+              # yum update -y
+              # ##Attaching the efs here for persistent storage
+              # yum install -y amazon-efs-utils
+              # mkdir -p /mnt/efs
+              # mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
+              # ##Installing Apache Web Server
+
+              # ##INSTALLING DOCKER
+              # yum install -y docker
+              # systemctl start docker
+              # systemctl enable docker
+              # usermod -aG docker ec2-user
+
+              # ##Login to ECR and pull Docker image
+              # aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
+              # docker pull ${var.ecr_registry}/miniserver-node-app:latest
+              # docker run -d -p 3000:3000 --name miniserver-app ${var.ecr_registry}/miniserver-node-app:latest
+
+              # #Creataing a simple webpage
+              # echo "<html><body><h1>Welcome to MiniServer Instance ${count.index + 1} in ${var.environment} Environment</h1></body></html>" > /var/www/html/index.html
+              # echo "<p>Instance ID: $(ec2-metadata --instance-id | cut -d ' ' -f 2)</p>" >> /var/www/html/index.html
+
+              # #starting Apache
+              # systemctl start httpd
+              # systemctl enable httpd
+
+
+              # ##Backup to S3, no data loss forever
+              
+              # BACKUP_DIR="/var/backups"
+              # S3_BUCKET="${var.s3_bucket_name}"
+              # DATE=$(date +%Y-%m-%d-%H-%M-%S)
+              # BACKUP_FILE="backup-$DATE.tar.gz"
+              # INSTANCE_ID=$(ec2-metadata --instance-id | cut -d ' ' -f 2)
+              
+              # # Create backup directory
+              # mkdir -p $BACKUP_DIR
+              
+              # # Create backup (add your important directories here)
+              # tar -czf $BACKUP_DIR/$BACKUP_FILE \
+              #   /var/www/html \
+              #   /mnt/efs \
+              #   /var/log/httpd 2>/dev/null
+              
+              # # Upload to S3
+              # aws s3 cp $BACKUP_DIR/$BACKUP_FILE s3://$S3_BUCKET/$INSTANCE_ID/ --region ${var.aws_region}
+              
+              # # Keep only last 7 days locally
+              # find $BACKUP_DIR -name "backup-*.tar.gz" -mtime +7 -delete
+              
+              # echo "$(date): Backup completed - $BACKUP_FILE uploaded to s3://$S3_BUCKET/$INSTANCE_ID/" >> /var/log/backup.log
+              # BACKUP_SCRIPT
+              
+              #               # Make script executable
+              #               chmod +x /usr/local/bin/backup.sh
+                            
+              #               # Add cron job (runs daily at 2 AM)
+              #               echo "0 2 * * * /usr/local/bin/backup.sh >> /var/log/backup.log 2>&1" | crontab -
+                            
+              #               # Run first backup immediately
+              #               /usr/local/bin/backup.sh
+              #   EOF
 
 resource "aws_security_group" "miniserver_sg" {
   name        = "${var.project_name}-sg"
