@@ -66,8 +66,8 @@ module "compute" {
   vpc_id                = module.network.vpc_id
   aws_region            = "ap-south-1"
   ecr_registry          = module.ecr.repository_url
-  s3_bucket_name    = module.backup.s3_bucket_name 
-  backup_policy_arn = module.backup.backup_policy_arn
+  s3_bucket_name        = module.backup.s3_bucket_name
+  backup_policy_arn     = module.backup.backup_policy_arn
 }
 
 
@@ -75,7 +75,7 @@ module "compute" {
 module "autoscalling" {
   source                = "./module/autoscaling"
   project_name          = "miniserver"
-  environment           = var.environment 
+  environment           = var.environment
   ami_id                = module.compute.ami_id
   instance_type         = "t3.micro"
   instance_profile_name = module.compute.instance_profile_name
@@ -103,27 +103,27 @@ module "database" {
 
 
 module "monitoring" {
-  source = "./module/monitoring"
-  project_name = "miniserver"
-  environment = var.environment
-  alarm_email = "raj.vbeyond@gmail.com"
-  asg_name = module.autoscalling.asg_name
-  alb_arn_suffix = module.loadbalancer.alb_arn_suffix
+  source                  = "./module/monitoring"
+  project_name            = "miniserver"
+  environment             = var.environment
+  alarm_email             = "raj.vbeyond@gmail.com"
+  asg_name                = module.autoscalling.asg_name
+  alb_arn_suffix          = module.loadbalancer.alb_arn_suffix
   target_group_arn_suffix = module.loadbalancer.target_group_arn_suffix
-  redis_cluster_id = module.database.redis_cluster_id
-  db_instance_id = module.database.db_instance_id
+  redis_cluster_id        = module.database.redis_cluster_id
+  db_instance_id          = module.database.db_instance_id
 }
 
 
 module "storage" {
   source = "./module/storage"
 
-  project_name = "miniserver"
-  environment = var.environment
-  vpc_id = module.network.vpc_id
-  vpc_cidr = module.network.vpc_cidr
+  project_name       = "miniserver"
+  environment        = var.environment
+  vpc_id             = module.network.vpc_id
+  vpc_cidr           = module.network.vpc_cidr
   private_subnet_ids = module.network.private_subnet_ids
-  common_tags = local.common_tags
+  common_tags        = local.common_tags
 }
 
 
@@ -131,22 +131,22 @@ module "ecr" {
   source = "./module/ecr"
 
   project_name = "miniserver"
-  app_name = "node-app"
-  common_tags = local.common_tags
+  app_name     = "node-app"
+  common_tags  = local.common_tags
 }
 
 
-module "backup_retention_days" {
+module "backup" {
   source = "./module/backup"
 
   project_name = "miniserver"
-  environment = var.environment
+  environment  = var.environment
   common_tags  = local.common_tags
   backup_tags = {
     Pourpose = "Automated backups"
-    Backup = "true"
+    Backup   = "true"
   }
   glacier_transition_days = 30
-  backup_retention_days = 365
+  backup_retention_days   = 365
 
 }

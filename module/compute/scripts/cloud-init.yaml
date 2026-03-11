@@ -1,59 +1,22 @@
 #cloud-config
 
-#Hostname and timezone configuration
+# Hostname and timezone configuration
 hostname: miniserver-${instance_number}
 timezone: Asia/Kolkata
 
-#Package update and installation
+# Package update and installation
 package_update: true
 package_upgrade: true
 
 packages:
-  - docker.io
-  - aws-cli
+  - docker
   - httpd
   - amazon-efs-utils
   - jq
   - htop
   - cronie
 
-runcmd:
-#Creating Directories for mounting EFS
- # Create directories
-  - mkdir -p /mnt/efs
-  - mkdir -p /var/backups
-  - mkdir -p /var/www/html
-
-# Mount EFS
-mounts:
-  - mount -t nfs4 ${efs_dns_name}:/ /mnt/efs
-  - [ "${efs_dns_name}:/", /mnt/efs, nfs4, "defaults,_netdev", "0", "0" ]
-  
-  # Docker setup
-  - systemctl start docker
-  - systemctl enable docker
-  - usermod -aG docker ec2-user
-  
-  # ECR login and container deployment
-  - aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${ecr_registry}
-  - docker pull ${ecr_registry}/miniserver-node-app:latest
-  - docker run -d -p 3000:3000 --name miniserver-app --restart unless-stopped ${ecr_registry}/miniserver-node-app:latest
-  
-  # Apache setup
-  - systemctl start httpd
-  - systemctl enable httpd
-  
-  # Run first backup
-  - /usr/local/bin/backup.sh
-  
-  # Log completion
-  - echo "$(date): Cloud-init setup complete!" | tee -a /var/log/cloud-init-custom.log
-
-
-
-
-
-# Write files
+# Write files (runs BEFORE runcmd)
 write_files:
   # Apache index page
   - path: /var/www/html/index.html
@@ -131,13 +94,44 @@ write_files:
     permissions: '0755'
     owner: root:root
   
-# Cron job for backups
+  # Cron job for backups
   - path: /etc/cron.d/backup
     content: |
       # Run backup daily at 2 AM
       0 2 * * * root /usr/local/bin/backup.sh >> /var/log/backup.log 2>&1
     permissions: '0644'
     owner: root:root
+
+# Run commands (runs AFTER write_files)
+runcmd:
+  # Create directories
+  - mkdir -p /mnt/efs
+  - mkdir -p /var/backups
+  - mkdir -p /var/www/html
+  
+  # Mount EFS (do this BEFORE backup!)
+  - mount -t nfs4 ${efs_dns_name}:/ /mnt/efs
+  - echo "${efs_dns_name}:/ /mnt/efs nfs4 defaults,_netdev 0 0" >> /etc/fstab
+  
+  # Docker setup
+  - systemctl start docker
+  - systemctl enable docker
+  - usermod -aG docker ec2-user
+  
+  # ECR login and container deployment
+  - aws ecr get-login-password --region ${aws_region} | docker login --username AWS --password-stdin ${ecr_registry}
+  - docker pull ${ecr_registry}/miniserver-node-app:latest
+  - docker run -d -p 3000:3000 --name miniserver-app --restart unless-stopped ${ecr_registry}/miniserver-node-app:latest
+  
+  # Apache setup
+  - systemctl start httpd
+  - systemctl enable httpd
+  
+  # Run first backup (NOW efs is mounted!)
+  - /usr/local/bin/backup.sh
+  
+  # Log completion
+  - echo "$(date) - Cloud-init setup complete!" | tee -a /var/log/cloud-init-custom.log
 
 # Final message
 final_message: "MiniServer instance ${instance_number} is ready! Setup completed in $UPTIME seconds."

@@ -1,13 +1,13 @@
 variable "project_name" {
   description = "value to be used as prefix for all resources"
   type        = string
-  
+
 }
 
 variable "environment" {
   description = "The desired environment"
-  type= string
-  
+  type        = string
+
 }
 
 variable "common_tags" {
@@ -31,6 +31,6 @@ variable "backup_tags" {
 
 variable "glacier_transition_days" {
   description = "Number of days after which to transition backups to Glacier"
-  default = 30
+  default     = 30
   type        = number
 }

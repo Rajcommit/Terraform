@@ -47,7 +47,7 @@ variable "aws_region" {
 }
 
 
-variable "ecr_registry"{
+variable "ecr_registry" {
   description = "ECR registry ID (account ID)"
   type        = string
 }
