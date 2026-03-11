@@ -1,3 +1,6 @@
+# File: /mnt/s/terraform/modules/module/backup/iam.tf
+# Purpose: IAM policy for EC2 instances to access S3 backup bucket
+
 data "aws_iam_policy_document" "s3_backup_access" {
   statement {
     effect = "Allow"
@@ -9,8 +12,9 @@ data "aws_iam_policy_document" "s3_backup_access" {
     ]
 
     resources = [
-      "${aws_s3_bucket.backup_bucket.arn}",
-    "${aws_s3_bucket.backup_bucket.arn}/*"]
+      aws_s3_bucket.backup_bucket.arn,
+      "${aws_s3_bucket.backup_bucket.arn}/*"
+    ]
   }
 
   statement {
@@ -19,6 +23,9 @@ data "aws_iam_policy_document" "s3_backup_access" {
       "s3:GetBucketPublicAccessBlock",
       "s3:GetBucketVersioning",
       "s3:GetBucketLifecycleConfiguration"
+    ]
+    resources = [
+      aws_s3_bucket.backup_bucket.arn
     ]
   }
 }
@@ -34,3 +41,5 @@ resource "aws_iam_policy" "s3_backup_access" {
     }
   )
 }
+
+##
