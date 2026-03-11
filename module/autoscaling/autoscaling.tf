@@ -16,12 +16,12 @@ resource "aws_launch_template" "app" {
       Name = "${var.project_name}-asg-instance"
     }
   }
-  
+
 }
 
 
 resource "aws_autoscaling_group" "app" {
-  name                = "${var.project_name}-asg" 
+  name                = "${var.project_name}-asg"
   vpc_zone_identifier = var.subnet_ids
   target_group_arns   = [var.target_group_arn]
 
@@ -37,7 +37,7 @@ resource "aws_autoscaling_group" "app" {
 
   }
   lifecycle {
-    create_before_destroy = true  # Zero-downtime deployments!
+    create_before_destroy = true # Zero-downtime deployments!
   }
   tag {
     key                 = "Name"
@@ -65,7 +65,7 @@ resource "aws_autoscaling_group" "app" {
 
   tag {
     key                 = "Owner"
-    value               = var.owner 
+    value               = var.owner
     propagate_at_launch = true
   }
 

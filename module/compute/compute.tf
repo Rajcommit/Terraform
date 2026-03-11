@@ -11,22 +11,22 @@ locals {
     CreatedAt   = formatdate("YYYY-MM-DD", timestamp())
   }
 
-# Add zipmap for ports
- services = ["ssh", "https"]
- ports = [22, 443]
- service_ports = zipmap(local.services, local.ports)
+  # Add zipmap for ports
+  services      = ["ssh", "https"]
+  ports         = [22, 443]
+  service_ports = zipmap(local.services, local.ports)
 }
 
 
 
 data "aws_ami" "my_ami" {
-most_recent = true
-owners      = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
-name   = "name"
-values = ["al2023-ami-2023.*-x86_64"]
-}
+    name   = "name"
+    values = ["al2023-ami-2023.*-x86_64"]
+  }
 }
 
 resource "aws_instance" "miniserver" {
@@ -38,8 +38,8 @@ resource "aws_instance" "miniserver" {
   vpc_security_group_ids = [aws_security_group.miniserver_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.miniserver_profile.name
 
-# Cloud-init user data
-   user_data = templatefile("${path.module}/scripts/cloud-init.yaml", {
+  # Cloud-init user data
+  user_data = templatefile("${path.module}/scripts/cloud-init.yaml", {
     instance_number = count.index + 1
     environment     = var.environment
     aws_region      = var.aws_region
@@ -54,7 +54,7 @@ resource "aws_instance" "miniserver" {
     volume_size           = 20
     volume_type           = "gp3"
     delete_on_termination = true
-    encrypted             = true  # Always encrypt!
+    encrypted             = true # Always encrypt!
   }
 
   tags = merge(
@@ -81,71 +81,71 @@ resource "aws_instance" "miniserver" {
   }
 }
 
-              #   <<-EOF
-              # #!/bin/bash
-              # ##Updating System here
-              # yum update -y
-              # ##Attaching the efs here for persistent storage
-              # yum install -y amazon-efs-utils
-              # mkdir -p /mnt/efs
-              # mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
-              # ##Installing Apache Web Server
+#   <<-EOF
+# #!/bin/bash
+# ##Updating System here
+# yum update -y
+# ##Attaching the efs here for persistent storage
+# yum install -y amazon-efs-utils
+# mkdir -p /mnt/efs
+# mount -t nfs4 ${var.efs_dns_name}:/ /mnt/efs
+# ##Installing Apache Web Server
 
-              # ##INSTALLING DOCKER
-              # yum install -y docker
-              # systemctl start docker
-              # systemctl enable docker
-              # usermod -aG docker ec2-user
+# ##INSTALLING DOCKER
+# yum install -y docker
+# systemctl start docker
+# systemctl enable docker
+# usermod -aG docker ec2-user
 
-              # ##Login to ECR and pull Docker image
-              # aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
-              # docker pull ${var.ecr_registry}/miniserver-node-app:latest
-              # docker run -d -p 3000:3000 --name miniserver-app ${var.ecr_registry}/miniserver-node-app:latest
+# ##Login to ECR and pull Docker image
+# aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${var.ecr_registry}    
+# docker pull ${var.ecr_registry}/miniserver-node-app:latest
+# docker run -d -p 3000:3000 --name miniserver-app ${var.ecr_registry}/miniserver-node-app:latest
 
-              # #Creataing a simple webpage
-              # echo "<html><body><h1>Welcome to MiniServer Instance ${count.index + 1} in ${var.environment} Environment</h1></body></html>" > /var/www/html/index.html
-              # echo "<p>Instance ID: $(ec2-metadata --instance-id | cut -d ' ' -f 2)</p>" >> /var/www/html/index.html
+# #Creataing a simple webpage
+# echo "<html><body><h1>Welcome to MiniServer Instance ${count.index + 1} in ${var.environment} Environment</h1></body></html>" > /var/www/html/index.html
+# echo "<p>Instance ID: $(ec2-metadata --instance-id | cut -d ' ' -f 2)</p>" >> /var/www/html/index.html
 
-              # #starting Apache
-              # systemctl start httpd
-              # systemctl enable httpd
+# #starting Apache
+# systemctl start httpd
+# systemctl enable httpd
 
 
-              # ##Backup to S3, no data loss forever
-              
-              # BACKUP_DIR="/var/backups"
-              # S3_BUCKET="${var.s3_bucket_name}"
-              # DATE=$(date +%Y-%m-%d-%H-%M-%S)
-              # BACKUP_FILE="backup-$DATE.tar.gz"
-              # INSTANCE_ID=$(ec2-metadata --instance-id | cut -d ' ' -f 2)
-              
-              # # Create backup directory
-              # mkdir -p $BACKUP_DIR
-              
-              # # Create backup (add your important directories here)
-              # tar -czf $BACKUP_DIR/$BACKUP_FILE \
-              #   /var/www/html \
-              #   /mnt/efs \
-              #   /var/log/httpd 2>/dev/null
-              
-              # # Upload to S3
-              # aws s3 cp $BACKUP_DIR/$BACKUP_FILE s3://$S3_BUCKET/$INSTANCE_ID/ --region ${var.aws_region}
-              
-              # # Keep only last 7 days locally
-              # find $BACKUP_DIR -name "backup-*.tar.gz" -mtime +7 -delete
-              
-              # echo "$(date): Backup completed - $BACKUP_FILE uploaded to s3://$S3_BUCKET/$INSTANCE_ID/" >> /var/log/backup.log
-              # BACKUP_SCRIPT
-              
-              #               # Make script executable
-              #               chmod +x /usr/local/bin/backup.sh
-                            
-              #               # Add cron job (runs daily at 2 AM)
-              #               echo "0 2 * * * /usr/local/bin/backup.sh >> /var/log/backup.log 2>&1" | crontab -
-                            
-              #               # Run first backup immediately
-              #               /usr/local/bin/backup.sh
-              #   EOF
+# ##Backup to S3, no data loss forever
+
+# BACKUP_DIR="/var/backups"
+# S3_BUCKET="${var.s3_bucket_name}"
+# DATE=$(date +%Y-%m-%d-%H-%M-%S)
+# BACKUP_FILE="backup-$DATE.tar.gz"
+# INSTANCE_ID=$(ec2-metadata --instance-id | cut -d ' ' -f 2)
+
+# # Create backup directory
+# mkdir -p $BACKUP_DIR
+
+# # Create backup (add your important directories here)
+# tar -czf $BACKUP_DIR/$BACKUP_FILE \
+#   /var/www/html \
+#   /mnt/efs \
+#   /var/log/httpd 2>/dev/null
+
+# # Upload to S3
+# aws s3 cp $BACKUP_DIR/$BACKUP_FILE s3://$S3_BUCKET/$INSTANCE_ID/ --region ${var.aws_region}
+
+# # Keep only last 7 days locally
+# find $BACKUP_DIR -name "backup-*.tar.gz" -mtime +7 -delete
+
+# echo "$(date): Backup completed - $BACKUP_FILE uploaded to s3://$S3_BUCKET/$INSTANCE_ID/" >> /var/log/backup.log
+# BACKUP_SCRIPT
+
+#               # Make script executable
+#               chmod +x /usr/local/bin/backup.sh
+
+#               # Add cron job (runs daily at 2 AM)
+#               echo "0 2 * * * /usr/local/bin/backup.sh >> /var/log/backup.log 2>&1" | crontab -
+
+#               # Run first backup immediately
+#               /usr/local/bin/backup.sh
+#   EOF
 
 resource "aws_security_group" "miniserver_sg" {
   name        = "${var.project_name}-sg"
@@ -156,9 +156,9 @@ resource "aws_security_group" "miniserver_sg" {
   dynamic "ingress" {
     for_each = local.service_ports
     content {
-      from_port = ingress.value
-      to_port = ingress.value
-      protocol = "tcp"
+      from_port   = ingress.value
+      to_port     = ingress.value
+      protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
       description = "${ingress.key} Access"
     }
@@ -175,7 +175,7 @@ resource "aws_security_group" "miniserver_sg" {
   # HTTP - only from ALB
   ingress {
     from_port       = 3000
-    to_port         = 3000  ## changed for docker port
+    to_port         = 3000 ## changed for docker port
     protocol        = "tcp"
     security_groups = [var.alb_security_group_id]
     description     = "HTTP Access from ALB"
@@ -192,7 +192,7 @@ resource "aws_security_group" "miniserver_sg" {
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" 
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow all outbound traffic"
   }
