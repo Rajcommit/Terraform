@@ -10,7 +10,7 @@ resource "aws_s3_bucket" "backup_bucket" {
   bucket = "${var.project_name}-backup-bucket-${random_id.bucket_id.hex}"
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false # CHANGED: Allow destroy for testing
   }
 
   tags = merge(
