@@ -163,5 +163,33 @@ jobs:
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        run: terraform plan -out=tfplan
         #run: terraform apply -auto-approve tfplan
+
+
+  ansible-configure:
+     name: Configure with Ansible
+     runs-on: ubuntu-latest
+     if: always() && needs['terraform-apply'].result == 'success'
+
+     steps:
+        - uses: actions/checkout@v4
+
+        - name: Setup SSH Key
+          run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/myec2key.pem
+            chmod 600 ~/.ssh/myec2key.pem
+
+        - name: Install Ansible
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y ansible
+        
+        - name: Wait for instances to be ready
+          run: sleep 60  # Adjust as needed
+
+        - name: Run Ansible Playbook
+          working-directory: module/ansible
+          run: |
+            

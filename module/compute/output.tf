@@ -33,3 +33,7 @@ output "user_data" {
               echo "Hello, World!" > /var/www/html/index.html
               EOF
 }
+
+output "instance_private_ips" {
+  value = aws_instance.miniserver[*].private_ip
+}
