@@ -6,7 +6,7 @@
   tasks:
     - name: Install packages
       yum:
-        name: "${pakages_to_install}"
+        name: "{{pakages_to_install}}"
         state: present
 
     - name: Create backup script
