@@ -108,3 +108,6 @@ Kirofix.md
 
 # Local module copy to keep out of git
 module/assignment-3/
+
+# Local planning/notes docs - never commit
+blueprint/
