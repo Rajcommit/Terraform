@@ -73,3 +73,10 @@ output "resourcce_overview" {
     ami_id       = module.compute.ami_id
   }
 }
+
+
+
+##Output for github actions
+output "worker_ips" {
+  value = module.compute.instance_private_ips
+}

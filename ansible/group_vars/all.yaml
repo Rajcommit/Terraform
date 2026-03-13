@@ -1,0 +1,23 @@
+---
+# Project settings
+project_name: miniserver
+aws_region: ap-south-1
+
+# Packages to install
+packages_to_install:
+  - docker
+  - git
+  - htop
+  - vim
+  - wget
+  - curl
+  - amazon-efs-utils
+  - jq
+
+# Docker settings
+docker_users:
+  - ec2-user
+
+# Application settings
+app_port: 3000
+ecr_registry: "{{ lookup('env', 'ECR_REGISTRY') }}"

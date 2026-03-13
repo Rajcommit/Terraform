@@ -1,0 +1,15 @@
+---
+- name: Configure Web Servers
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure Apache is running
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+        
+    - name: Deploy application
+      copy:
+        src: ../files/index.html
+        dest: /var/www/html/index.html

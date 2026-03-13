@@ -1,0 +1,29 @@
+---
+- name: Setup Worker Node
+  hosts: workers
+  become: true
+
+  tasks:
+    - name: Install packages
+      yum:
+        name: "${pakages_to_install}"
+        state: present
+
+    - name: Create backup script
+      systemd:
+        name: backup
+        state: started
+        enabled: yes
+
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add users to Docker group
+      user:
+        name: "{{ item }}"
+        groups: docker
+        append: yes
+      loop: "{{ docker_users }}"
