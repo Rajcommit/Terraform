@@ -190,5 +190,6 @@ jobs:
         run: sleep 60 # Adjust as needed
 
       - name: Run Ansible Playbook
-        working-directory: module/ansible
+        working-directory: ansible
         run: |
+          ansible-playbook -i inventory/hosts.ini playbooks/setup-worker.yml

@@ -6,14 +6,14 @@
   tasks:
     - name: Install packages
       yum:
-        name: "{{pakages_to_install}}"
+        name: "{{ packages_to_install }}"
         state: present
 
-    - name: Create backup script
-      systemd:
-        name: backup
-        state: started
-        enabled: yes
+    # - name: Create backup script
+    #   systemd:
+    #     name: backup
+    #     state: started
+    #     enabled: yes
 
     - name: Start Docker service
       systemd:
