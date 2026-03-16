@@ -94,5 +94,44 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Empty versioned backup bucket before destroy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BUCKET_NAME="$(terraform state show module.backup.aws_s3_bucket.backup_bucket 2>/dev/null | awk -F' = ' '/^[[:space:]]*bucket = / {gsub(/"/, "", $2); print $2; exit}')"
+
+          if [ -z "${BUCKET_NAME}" ]; then
+            echo "No backup bucket found in terraform state. Continuing."
+            exit 0
+          fi
+
+          echo "Preparing to empty bucket: ${BUCKET_NAME}"
+
+          if ! aws s3api head-bucket --bucket "${BUCKET_NAME}" >/dev/null 2>&1; then
+            echo "Bucket does not exist or is not accessible. Continuing."
+            exit 0
+          fi
+
+          aws s3 rm "s3://${BUCKET_NAME}" --recursive || true
+
+          VERSIONS_JSON="$(mktemp)"
+          DELETE_MARKERS_JSON="$(mktemp)"
+          DELETE_PAYLOAD_JSON="$(mktemp)"
+
+          aws s3api list-object-versions --bucket "${BUCKET_NAME}" > "${VERSIONS_JSON}"
+
+          if jq -e '.Versions != null and (.Versions | length > 0)' "${VERSIONS_JSON}" >/dev/null; then
+            jq '{Objects: [.Versions[] | {Key: .Key, VersionId: .VersionId}], Quiet: true}' "${VERSIONS_JSON}" > "${DELETE_PAYLOAD_JSON}"
+            aws s3api delete-objects --bucket "${BUCKET_NAME}" --delete "file://${DELETE_PAYLOAD_JSON}"
+          fi
+
+          if jq -e '.DeleteMarkers != null and (.DeleteMarkers | length > 0)' "${VERSIONS_JSON}" >/dev/null; then
+            jq '{Objects: [.DeleteMarkers[] | {Key: .Key, VersionId: .VersionId}], Quiet: true}' "${VERSIONS_JSON}" > "${DELETE_MARKERS_JSON}"
+            aws s3api delete-objects --bucket "${BUCKET_NAME}" --delete "file://${DELETE_MARKERS_JSON}"
+          fi
+
+          echo "Bucket cleanup completed for ${BUCKET_NAME}"
+
       - name: Terraform Destroy Apply
         run: terraform destroy -auto-approve
