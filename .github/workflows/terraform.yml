@@ -165,6 +165,7 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
         #run: terraform apply -auto-approve tfplan
+    
 
   ansible-configure:
     name: Configure with Ansible
@@ -175,21 +176,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
       - name: Setup SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/myec2key.pem
           chmod 600 ~/.ssh/myec2key.pem
 
-      - name: Install Ansible
+      - name: Install Ansible and AWS dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y ansible
+          pip install boto3 botocore
 
       - name: Wait for instances to be ready
-        run: sleep 60 # Adjust as needed
+        run: sleep 60
 
-      - name: Run Ansible Playbook
+      - name: Run Ansible Playbooks
         working-directory: ansible
         run: |
-          ansible-playbook -i inventory/hosts.ini playbooks/setup-worker.yml
+          ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-worker.yml
+          ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-elk-base.yml
+          ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-elk.yml
+
