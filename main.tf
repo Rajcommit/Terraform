@@ -161,3 +161,28 @@ resource "local_file" "ansible_inventory" {
   
   depends_on = [ module.compute ]
 }
+
+
+module "elk" {
+  source = "./module/elk"
+  project_name       = "miniserver"
+  environment        = var.environment
+  vpc_id             = module.network.vpc_id
+  vpc_cidr           = module.network.vpc_cidr
+  private_subnet_ids = module.network.private_subnet_ids
+  key_name           = "myec2key"
+  common_tags        = local.common_tags
+
+}
+
+
+resource "local_file" "ansible_inventory" {
+  content  = templatefile("${path.module}/ansible/inventory/inventory.tpl", {
+    worker_ips   = module.compute.instance_private_ips
+    ssh_key_path = "~/.ssh/myec2key.pem"
+    elk_ip       = module.elk.elk_private_ip
+  })
+  filename = "${path.module}/ansible/inventory/hosts.ini"
+
+  depends_on = [module.compute, module.elk]
+}
