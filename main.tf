@@ -152,16 +152,6 @@ module "backup" {
 
 }
 
-##Generating Ansible inventory from Terraform output
-resource "local_file" "ansible_inventory" {
-  content  = templatefile("${path.module}/ansible/inventory/inventory.tpl", {
-    worker_ips    = module.compute.instance_private_ips
-    ssh_key_path  = "~/.ssh/myec2key.pem"
-  })
-  filename = "${path.module}/ansible/inventory/hosts.ini"
-  
-  depends_on = [ module.compute ]
-}
 
 
 module "elk" {
@@ -176,7 +166,7 @@ module "elk" {
 
 }
 
-
+##Generating Ansible inventory from Terraform output
 resource "local_file" "ansible_inventory" {
   content  = templatefile("${path.module}/ansible/inventory/inventory.tpl", {
     worker_ips   = module.compute.instance_private_ips
