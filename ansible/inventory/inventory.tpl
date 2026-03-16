@@ -6,5 +6,8 @@ localhost ansible_connection=local
 ${ip} ansible_user=ec2-user ansible_ssh_private_key_file=${ssh_key_path}
 %{ endfor ~}
 
+[elk]
+${elk_ip} ansible_user=ec2-user ansible_ssh_private_key_file=${ssh_key_path}
+
 [all:vars]
 ansible_python_interpreter=/usr/bin/python3

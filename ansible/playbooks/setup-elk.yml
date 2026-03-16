@@ -1,0 +1,20 @@
+---
+- name: Deploy ELK Stack
+  hosts: elk
+  become: true
+
+  tasks:
+    - name: Deploy docker-compose
+      copy:
+       src:  ../files/elk-docker-compose.yml
+       dest: /opt/elk/docker-compose.yml
+       mode: '0644'
+    
+    - name: Deploy Logstash config
+      copy: 
+        src: ../files/logstash.conf
+        dest: /opt/elk/logstash.conf
+        mode: '0644'
+    
+    - name: Start ELK stack
+      shell: cd /opt/elk && docker-compose up -d

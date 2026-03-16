@@ -112,6 +112,7 @@ module "monitoring" {
   target_group_arn_suffix = module.loadbalancer.target_group_arn_suffix
   redis_cluster_id        = module.database.redis_cluster_id
   db_instance_id          = module.database.db_instance_id
+  common_tags             = local.common_tags
 }
 
 
@@ -151,13 +152,28 @@ module "backup" {
 
 }
 
+
+
+module "elk" {
+  source = "./module/elk"
+  project_name       = "miniserver"
+  environment        = var.environment
+  vpc_id             = module.network.vpc_id
+  vpc_cidr           = module.network.vpc_cidr
+  private_subnet_ids = module.network.private_subnet_ids
+  key_name           = "myec2key"
+  common_tags        = local.common_tags
+
+}
+
 ##Generating Ansible inventory from Terraform output
 resource "local_file" "ansible_inventory" {
   content  = templatefile("${path.module}/ansible/inventory/inventory.tpl", {
-    worker_ips    = module.compute.instance_private_ips
-    ssh_key_path  = "~/.ssh/myec2key.pem"
+    worker_ips   = module.compute.instance_private_ips
+    ssh_key_path = "~/.ssh/myec2key.pem"
+    elk_ip       = module.elk.elk_private_ip
   })
   filename = "${path.module}/ansible/inventory/hosts.ini"
-  
-  depends_on = [ module.compute ]
+
+  depends_on = [module.compute, module.elk]
 }

@@ -1,0 +1,51 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node #3 Set Elasticsearch to run in single-node mode
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g ## Set JVM heap size to 1g (half of the allocated memory)
+      - xpack.security.enabled=false ## Disable security for local testing
+    cpus: 0.75
+    mem_limit: 2g
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -fsS http://localhost:9200 >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - NODE_OPTIONS=--max-old-space-size=768 ## Set Kibana memory limit to 768m (half of the allocated memory)
+    cpus: 0.50
+    mem_limit: 1g
+    ports:
+      - "5601:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.0
+    restart: unless-stopped
+    environment:
+      - LS_JAVA_OPTS=-Xms512m -Xmx512m ## Set JVM heap size to 512m (half of the allocated memory)
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    cpus: 0.50
+    mem_limit: 1g
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    volumes:
+      - /opt/elk/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+
+volumes:
+  esdata:
