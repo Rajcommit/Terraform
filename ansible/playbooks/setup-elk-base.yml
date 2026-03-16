@@ -1,6 +1,6 @@
 ---
 - name: Setup ELK Base (Docker)
-  hosts: elk
+  hosts: role_monitoring
   become: true
 
   tasks:
