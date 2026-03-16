@@ -163,7 +163,7 @@ jobs:
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform plan -out=tfplan
+        run: terraform apply -auto-approve tfplan
         #run: terraform apply -auto-approve tfplan
 
   ansible-configure:

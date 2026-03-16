@@ -8,7 +8,7 @@ data "aws_ami" "amazon_linux" {
     }
 }
 
-resource "aws_security_group" "elk_Sg" {
+resource "aws_security_group" "elk_sg" {
       name = "${var.project_name}-elk-sg"
       description = "Security group for elk stack opening specific security group"
       vpc_id = var.vpc_id
@@ -49,6 +49,7 @@ resource "aws_instance" "elk" {
   subnet_id              = var.private_subnet_ids[0]
   vpc_security_group_ids = [aws_security_group.elk_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.elk_profile.name
+  key_name               = var.key_name
 
   root_block_device {
       volume_size = 30

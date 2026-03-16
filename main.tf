@@ -112,6 +112,7 @@ module "monitoring" {
   target_group_arn_suffix = module.loadbalancer.target_group_arn_suffix
   redis_cluster_id        = module.database.redis_cluster_id
   db_instance_id          = module.database.db_instance_id
+  common_tags             = local.common_tags
 }
 
 

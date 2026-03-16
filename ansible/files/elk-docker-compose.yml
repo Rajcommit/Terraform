@@ -45,8 +45,7 @@ services:
       elasticsearch:
         condition: service_healthy
     volumes:
-      - /mnt/s/terraform/localstack-test/blueprint/monitoring/logs:/var/log/cloudtrail:ro
-      - /mnt/s/terraform/localstack-test/blueprint/monitoring/cloudtrail-local.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - /opt/elk/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
 
 volumes:
   esdata:

@@ -13,7 +13,7 @@
     - name: Deploy Logstash config
       copy: 
         src: ../files/logstash.conf
-        dest: /op/elk/logstash.conf
+        dest: /opt/elk/logstash.conf
         mode: '0644'
     
     - name: Start ELK stack

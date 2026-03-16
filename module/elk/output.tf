@@ -3,9 +3,9 @@ output "elk_instance_id" {
 }
 
 output "elk_private_ip" {
-    value = aws_instance.elk
+    value = aws_instance.elk.private_ip
 }
 
 output "elk_security_group_id" {
-    value = aws_security_group.elk_Sg
+    value = aws_security_group.elk_sg.id
 }
