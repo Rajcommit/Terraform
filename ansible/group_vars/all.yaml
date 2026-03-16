@@ -13,6 +13,7 @@ packages_to_install:
   - curl
   - amazon-efs-utils
   - jq
+  - amazon-cloudwatch-agent 
 
 # Docker settings
 docker_users:
