@@ -4,7 +4,7 @@ Production-style Terraform project for deploying a multi-tier application stack 
 
 ## Architecture Diagram
 
-![Miniserver Complete Infrastructure](miniserver-complete-detailed.png)
+![Miniserver Production Architecture](miniserver-architecture.png)
 
 Alternate diagram (lighter view):
 
