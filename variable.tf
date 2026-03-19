@@ -1,3 +1,17 @@
+variable "project_name" {
+  description = "value to be used as prefix for all resources"
+  type        = string
+  default = "miniserver"
+}
+
+
+variable "region" {
+  description = "The region wher the infra is being deployed"
+  type = string
+  default = "ap-south-1"
+
+}
+
 variable "environment" {
   description = "The devlopment environment (e.g dev,prod ,stage anything in the world)"
   type        = string

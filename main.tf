@@ -64,7 +64,8 @@ module "compute" {
   subnet_ids            = module.network.private_subnet_ids
   alb_security_group_id = module.loadbalancer.alb_security_group_id
   vpc_id                = module.network.vpc_id
-  aws_region            = "ap-south-1"
+  vpc_cidr              = module.network.vpc_cidr
+  aws_region            = var.region
   ecr_registry          = module.ecr.repository_url
   s3_bucket_name        = module.backup.s3_bucket_name
   backup_policy_arn     = module.backup.backup_policy_arn
@@ -94,7 +95,7 @@ module "autoscalling" {
 
 module "database" {
   source             = "./module/database"
-  project_name       = "miniserver-rds"
+  project_name       = [var.project_name]-rds
   environment        = var.environment
   vpc_id             = module.network.vpc_id
   vpc_cidr           = module.network.vpc_cidr
@@ -104,7 +105,7 @@ module "database" {
 
 module "monitoring" {
   source                  = "./module/monitoring"
-  project_name            = "miniserver"
+  project_name            = var.project_name
   environment             = var.environment
   alarm_email             = "raj.vbeyond@gmail.com"
   asg_name                = module.autoscalling.asg_name
