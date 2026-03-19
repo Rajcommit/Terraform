@@ -121,9 +121,12 @@ resource "aws_route_table" "public" {
 ##Route Table for Private Subnet
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.main[0].id
+  dynamic "route" {
+    for_each= var.nat_gateway_enabled ? [1] : []
+    content {
+      cidr_block = "0.0.0.0/0"
+      nat_gateway_id = aws_nat_gateway.main[0].id
+      }
   }
   tags = merge(
     local.common_tags,
