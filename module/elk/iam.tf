@@ -13,6 +13,12 @@ resource "aws_iam_role" "elk_role" {
   tags = var.common_tags
 }
 
+
+resource "aws_iam_role_policy_attachment" "elk_ssm" {
+   role = aws_iam_role.elk_role
+   policy_arn = "arn:aws:iam:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_role_policy" "elk_cloudwatch_read" {
   name = "${var.project_name}-elk-cw-read"
   role = aws_iam_role.elk_role.id

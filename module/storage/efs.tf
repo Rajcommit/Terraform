@@ -35,6 +35,13 @@ resource "aws_security_group" "efs" {
        Purpose = "Docker configs and shared data"
     }
   )
+
+   lifecycle {
+    postcondition {
+      condition     = self.encrypted == true
+      error_message = "EFS must be encrypted at rest! Docker configs and app data require encryption."
+    }
+  }
 }
 
 resource "aws_security_group_rule" "efs_ingress" {

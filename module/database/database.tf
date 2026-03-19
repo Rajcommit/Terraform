@@ -79,7 +79,14 @@ resource "aws_db_instance" "mysql" {
       Name = "${var.project_name}-mysql-rds"
     }
   )
-}
+
+  lifecycle {
+       postcondition {
+          condition = self.storage_encrypted == true
+          error_message = "RDS storage encryption is OFF! Database must be encrypted at rest."
+       }
+    }
+  }
 
 
 ##Custom Parameter Group 

@@ -22,6 +22,13 @@ resource "aws_vpc" "main" {
       VCS-Test = "GitOps-Workflow-Test"
     }
   )
+
+  lifecycle {
+     postcondition {
+       condition = self.enable_dns_support == true
+       error_message = "VPC DNS support must be enabled! Instances won't resolve AWS service endpoints without it."
+     }
+  }
 }
 
 ##Public subnet creation

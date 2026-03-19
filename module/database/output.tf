@@ -12,6 +12,11 @@
 output "rds_endpoint" {
     description = "RDS MYSQL PORT"
     value = aws_db_instance.mysql.endpoint
+
+    precondition {
+      condition = can(regex(".*\\.rds\\.amazonaws\\.com",aws_db_instance.mysql.endpoint))
+      error_message = "RDS endpoint doesn't match expected AWS format: ${aws_db_instance.mysql.endpoint}"
+    }
 }
 
 output "rds_port" {
@@ -22,12 +27,22 @@ output "rds_port" {
 output "db_secret_arn" {
     description = "ARN of the database secret_credentials for future refrencing"
     value = aws_secretsmanager_secret.db_credentials.arn
+    
+    precondition {
+        condition = startswith(aws_secretsmanager_secret.db_credentials.arn, "arn:aws:secretsmanager:")
+        error_message = "Secret ARN is invalid: ${aws_secretsmanager_secret.db_credentials.arn}"
+    }
 }
 
 
 output "redis_endpoint" {
     description = "Redis cache endpoint"
     value = aws_elasticache_cluster.redis.cache_nodes[0].address
+
+    precondition {
+      condition = aws_elasticache_cluster.redis.cache_nodes[0] != ""
+      error_message = "Redis endpoint is empty — cluster may have failed to provision nodes!"
+    }
 }
 
 output "redis_port" {
