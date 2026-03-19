@@ -1,6 +1,6 @@
 ---
 - name: Deploy ELK Stack
-  hosts: elk
+  hosts: role_monitoring
   become: true
 
   tasks:

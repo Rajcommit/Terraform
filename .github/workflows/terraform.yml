@@ -163,9 +163,7 @@ jobs:
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
-        #run: terraform apply -auto-approve tfplan
-    
+        run: terraform plan
 
   ansible-configure:
     name: Configure with Ansible
@@ -204,4 +202,3 @@ jobs:
           ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-worker.yml
           ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-elk-base.yml
           ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-elk.yml
-

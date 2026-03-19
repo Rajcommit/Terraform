@@ -12,6 +12,11 @@ output "alb_arn" {
 output "alb_dns_name" {
   description = "The DNS name of the Application Load Balancer"
   value       = aws_lb.application_load_balancer.dns_name
+
+   precondition {
+    condition     = can(regex(".*\\.elb\\.amazonaws\\.com$", aws_lb.application_load_balancer.dns_name))
+    error_message = "ALB DNS doesn't match expected format: ${aws_lb.application_load_balancer.dns_name}"
+  }
 }
 
 output "alb_zone_id" {
