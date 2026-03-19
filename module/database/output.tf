@@ -40,7 +40,7 @@ output "redis_endpoint" {
     value = aws_elasticache_cluster.redis.cache_nodes[0].address
 
     precondition {
-      condition = aws_elasticache_cluster.redis.cache_nodes[0] != ""
+      condition = length(aws_elasticache_cluster.redis.cache_nodes) > 0
       error_message = "Redis endpoint is empty — cluster may have failed to provision nodes!"
     }
 }
