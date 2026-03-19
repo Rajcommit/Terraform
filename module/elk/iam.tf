@@ -15,8 +15,8 @@ resource "aws_iam_role" "elk_role" {
 
 
 resource "aws_iam_role_policy_attachment" "elk_ssm" {
-   role = aws_iam_role.elk_role
-   policy_arn = "arn:aws:iam:policy/AmazonSSMManagedInstanceCore"
+   role = aws_iam_role.elk_role.name
+   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_iam_role_policy" "elk_cloudwatch_read" {
