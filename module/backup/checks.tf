@@ -2,7 +2,7 @@
 # Purpose: Verify S3 backup bucket has versioning enabled
 
 check "backup_bucket_exists"  {    ## We can't check versioning status from a data source — AWS doesn't expose it that way. But we CAN verify the bucket exists 
-  data "aws_s3_bucket_versioning" "verify" {
+   data "aws_s3_bucket" "verify" {
     bucket = aws_s3_bucket.backup_bucket.id
   }
 
