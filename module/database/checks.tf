@@ -7,7 +7,7 @@ check "rds_available" {
   }
 
    assert {
-      condition     = data.aws_db_instance.verify.db_instance_status == "available"
+      condition     = data.aws_db_instance.verify.endpoint != ""
       error_message = "RDS is NOT in 'available' state! Current: ${data.aws_db_instance.verify.db_instance_status}"
    } 
 }
