@@ -59,7 +59,7 @@ module "compute" {
   source                = "./module/compute"
   project_name          = "miniserver"
   environment           = var.environment
-  instance_count        = 1
+  instance_count        = 0
   efs_dns_name          = module.storage.efs_dns_name
   subnet_ids            = module.network.private_subnet_ids
   alb_security_group_id = module.loadbalancer.alb_security_group_id
@@ -95,7 +95,7 @@ module "autoscalling" {
 
 module "database" {
   source             = "./module/database"
-  project_name       = [var.project_name]-rds
+  project_name       = "${var.project_name}-rds"
   environment        = var.environment
   vpc_id             = module.network.vpc_id
   vpc_cidr           = module.network.vpc_cidr

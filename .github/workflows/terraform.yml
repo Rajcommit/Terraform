@@ -163,7 +163,7 @@ jobs:
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform plan
+        run: terraform apply tfplan
 
   ansible-configure:
     name: Configure with Ansible

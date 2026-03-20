@@ -32,7 +32,7 @@ variable "instance_count" {
 
   validation {
   condition     = var.instance_count <= 2
-  error_message = "🚨 FREE TIER: Max 2 instance (750 hours/month). Current: ${var.instance_count}"
+  error_message = "FREE TIER: Max 2 instance (750 hours/month). Current: ${var.instance_count}"
 }
 
 }
