@@ -23,7 +23,7 @@ variable "private_subnet_ids" {
 variable "instance_type" {
   description = "EC2 instance type for ELK"
   type        = string
-  default     = "t3.medium"
+  default     = "t3.small"
 }
 
 variable "common_tags" {
