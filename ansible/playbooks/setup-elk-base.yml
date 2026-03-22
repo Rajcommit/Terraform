@@ -16,11 +16,11 @@
 
     - name: Make swap
       command: mkswap /swapfile
-      changed_when: true
+      when: ansible_swaptotal_mb == 0
 
     - name: Enable swap
       command: swapon /swapfile
-      ignore_errors: true
+      when: ansible_swaptotal_mb == 0
 
     - name: Add swap to fstab
       lineinfile:
