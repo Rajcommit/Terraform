@@ -51,6 +51,20 @@ resource "aws_instance" "elk" {
   iam_instance_profile   = aws_iam_instance_profile.elk_profile.name
   key_name               = var.key_name
 
+  user_data = <<-EOF
+    #!/bin/bash
+    # Create swap BEFORE Docker starts - ELK needs it
+    if [ ! -f /swapfile ]; then
+      dd if=/dev/zero of=/swapfile bs=1M count=2048
+      chmod 600 /swapfile
+    fi
+    mkswap /swapfile
+    swapon /swapfile
+    grep -q '/swapfile' /etc/fstab || echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
+    sysctl -w vm.max_map_count=262144
+    echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
+  EOF
+
   root_block_device {
       volume_size = 30
       volume_type = "gp3"
