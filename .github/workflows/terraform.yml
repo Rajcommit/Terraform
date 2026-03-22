@@ -193,6 +193,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
           pip install boto3 botocore
+          pipx inject ansible-core boto3 botocore
 
       - name: Install SSM Plugin
         run: |
