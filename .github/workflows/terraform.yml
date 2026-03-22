@@ -159,11 +159,12 @@ jobs:
       - name: Terraform Init
         run: terraform init
       - name: Download Plan
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifacoutt@v4
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform apply tfplan
+        run: terraform plan  tfplan
+        #run: terraform apply tfplan
 
   ansible-configure:
     name: Configure with Ansible
@@ -192,6 +193,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ansible
           pip install boto3 botocore
+
+      - name: Install SSM Plugin
+        run: |
+          curl "https://s3.amazonaws.com/session-manager-plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
+          sudo dpkg -i session-manager-plugin.deb
+
+      - name: Install Ansible SSM collection
+        run: ansible-galaxy collection install community.aws
 
       - name: Wait for instances to be ready
         run: sleep 60

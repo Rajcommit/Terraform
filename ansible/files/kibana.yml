@@ -1,0 +1,7 @@
+server.host: "0.0.0.0"  ##listen on all interfaces (needed inside Docker)
+server.shutdownTimeout: "5s"  ##graceful shutdown window
+elasticsearch.hosts: ["http://elasticsearch:9200"]  ##where to find ES 
+monitoring.ui.container.elasticsearch.enabled: true ## show container monitoring in UI
+csp.strict: false ##relaxed Content Security Policy (allows embedding)
+csp.warnLegacyBrowsers: false  ##allows Kibana to be embedded in iframes (useful for dashboards)
+server.securityResponseHeaders.disableEmbedding: false

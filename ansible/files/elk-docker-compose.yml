@@ -4,8 +4,12 @@ services:
     restart: unless-stopped
     environment:
       - discovery.type=single-node #3 Set Elasticsearch to run in single-node mode
-      - ES_JAVA_OPTS=-Xms1g -Xmx1g ## Set JVM heap size to 1g (half of the allocated memory)
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m ## Set JVM heap size to 1g (half of the allocated memory)
       - xpack.security.enabled=false ## Disable security for local testing
+      - xpack.watcher.enabled=false
+      - xpack.monitoring.collection.enabled=false
+      - ingest.geoip.downloader.enabled=false
+
     cpus: 0.75
     mem_limit: 2g
     ports:
@@ -25,22 +29,40 @@ services:
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
       - NODE_OPTIONS=--max-old-space-size=768 ## Set Kibana memory limit to 768m (half of the allocated memory)
+      - TELEMETRY_ENABLED=false
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=changeme-generate-a-32char-key!!
     cpus: 0.50
     mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:5601/api/status || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
     ports:
       - "5601:5601"
     depends_on:
       elasticsearch:
         condition: service_healthy
+    volumes:
+      - /opt/elk/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.12.0
     restart: unless-stopped
     environment:
-      - LS_JAVA_OPTS=-Xms512m -Xmx512m ## Set JVM heap size to 512m (half of the allocated memory)
+      - LS_JAVA_OPTS=-Xms512m -Xmx768m ## Set JVM heap size to 512m (half of the allocated memory)
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - PIPELINE_WORKERS=1
+      - MONITORING_ENABLED=false
+      - AWS_DEFAULT_REGION=ap-south-1
     cpus: 0.50
     mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9600 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     depends_on:
       elasticsearch:
         condition: service_healthy
