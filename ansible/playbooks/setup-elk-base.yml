@@ -16,8 +16,7 @@
 
     - name: Make swap
       command: mkswap /swapfile
-      args:
-        creates: /swapfile
+      changed_when: true
 
     - name: Enable swap
       command: swapon /swapfile
