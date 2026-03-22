@@ -2,6 +2,8 @@
 - name: Setup Worker Node
   hosts: all:!role_monitoring
   become: true
+  vars_files:
+    - ../group_vars/all.yaml
 
   tasks:
     - name: Install packages
