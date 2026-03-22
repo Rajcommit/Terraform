@@ -72,10 +72,10 @@ resource "aws_lb_target_group" "app_target_group" {
     protocol            = "HTTP"
     matcher             = "200-399"
     interval            = 30
-    port                = "traffic-port"
+    port                = "80"
     timeout             = 5
     healthy_threshold   = 2
-    unhealthy_threshold = 2
+    unhealthy_threshold = 5
   }
 
   # stickiness {

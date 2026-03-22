@@ -29,6 +29,13 @@
         line: "/swapfile swap swap defaults 0 0"
         state: present
 
+    - name: Set vm.max_map_count for Elasticsearch
+      sysctl:
+        name: vm.max_map_count
+        value: "262144"
+        state: present
+        reload: true
+
     - name: Install Docker
       yum:
         name: docker
