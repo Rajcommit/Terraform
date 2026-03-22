@@ -159,11 +159,11 @@ jobs:
       - name: Terraform Init
         run: terraform init
       - name: Download Plan
-        uses: actions/download-artifacoutt@v4
+        uses: actions/download-artifact@v4
         with:
           name: tfplan
       - name: Terraform Apply
-        run: terraform plan  tfplan
+        run: terraform apply tfplan
         #run: terraform apply tfplan
 
   ansible-configure:
