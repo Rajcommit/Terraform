@@ -14,6 +14,7 @@ resource "aws_launch_template" "app" {
     resource_type = "instance"
     tags = {
       Name = "${var.project_name}-asg-instance"
+      Role = "worker"
     }
   }
 
@@ -66,6 +67,12 @@ resource "aws_autoscaling_group" "app" {
   tag {
     key                 = "Owner"
     value               = var.owner
+    propagate_at_launch = true
+  }
+
+  tag {
+    key                 = "Role"
+    value               = "worker"
     propagate_at_launch = true
   }
 
