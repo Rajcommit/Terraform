@@ -201,7 +201,7 @@ jobs:
           sudo dpkg -i session-manager-plugin.deb
 
       - name: Install Ansible SSM collection
-        run: ansible-galaxy collection install community.aws
+        run: ansible-galaxy collection install amazon.aws --force
 
       - name: Wait for instances to be ready
         run: sleep 60
