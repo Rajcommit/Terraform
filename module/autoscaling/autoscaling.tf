@@ -14,6 +14,7 @@ resource "aws_launch_template" "app" {
     resource_type = "instance"
     tags = {
       Name = "${var.project_name}-asg-instance"
+      Role = "worker"
     }
   }
 
