@@ -1,0 +1,47 @@
+---
+- name: Load sample datasets into Elasticsearch
+  hosts: role_monitoring
+  become: true
+
+  tasks:
+    - name: Create datasets directory
+      file:
+        path: /opt/elk/datasets
+        state: directory
+        mode: "0755"
+
+    - name: Copy dataset files
+      copy:
+        src: "../files/datasets/{{ item }}"
+        dest: "/opt/elk/datasets/{{ item }}"
+        mode: "0644"
+      loop:
+        - products.csv
+        - products.conf
+        - stocks.txt
+        - stocks.conf
+        - nutrition.csv
+        - nutrition.conf
+        - logs-data
+        - log.txt
+        - log-conf.conf
+
+    - name: Load products data
+      shell: cat /opt/elk/datasets/products.csv | docker exec -i $(docker ps -qf "name=logstash") /usr/share/logstash/bin/logstash -f /opt/elk/datasets/products.conf
+      register: products_result
+      ignore_errors: true
+
+    - name: Load stocks data
+      shell: cat /opt/elk/datasets/stocks.txt | docker exec -i $(docker ps -qf "name=logstash") /usr/share/logstash/bin/logstash -f /opt/elk/datasets/stocks.conf
+      register: stocks_result
+      ignore_errors: true
+
+    - name: Load nutrition data
+      shell: cat /opt/elk/datasets/nutrition.csv | docker exec -i $(docker ps -qf "name=logstash") /usr/share/logstash/bin/logstash -f /opt/elk/datasets/nutrition.conf
+      register: nutrition_result
+      ignore_errors: true
+
+    - name: Load log data
+      shell: cat /opt/elk/datasets/logs-data /opt/elk/datasets/log.txt | docker exec -i $(docker ps -qf "name=logstash") /usr/share/logstash/bin/logstash -f /opt/elk/datasets/log-conf.conf
+      register: logs_result
+      ignore_errors: true  

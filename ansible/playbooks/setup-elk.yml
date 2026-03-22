@@ -6,15 +6,21 @@
   tasks:
     - name: Deploy docker-compose
       copy:
-       src:  ../files/elk-docker-compose.yml
-       dest: /opt/elk/docker-compose.yml
-       mode: '0644'
-    
+        src: ../files/elk-docker-compose.yml
+        dest: /opt/elk/docker-compose.yml
+        mode: "0644"
+
     - name: Deploy Logstash config
-      copy: 
+      copy:
         src: ../files/logstash.conf
         dest: /opt/elk/logstash.conf
-        mode: '0644'
-    
+        mode: "0644"
+
+    - name: Deploy Kibana config
+      copy:
+        src: ../files/kibana.yml
+        dest: /opt/elk/kibana.yml
+        mode: "0644"
+
     - name: Start ELK stack
       shell: cd /opt/elk && docker-compose up -d

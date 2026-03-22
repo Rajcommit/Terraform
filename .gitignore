@@ -111,3 +111,6 @@ module/assignment-3/
 
 # Local planning/notes docs - never commit
 blueprint/
+
+# Local data directory
+Data/
