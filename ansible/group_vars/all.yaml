@@ -10,7 +10,6 @@ packages_to_install:
   - htop
   - vim
   - wget
-  - curl
   - amazon-efs-utils
   - jq
   - amazon-cloudwatch-agent 
