@@ -219,3 +219,4 @@ jobs:
         working-directory: ansible
         if: always()
         run: ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-elk.yml
+##
