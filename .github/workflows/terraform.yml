@@ -208,7 +208,7 @@ jobs:
 
       - name: Verify SSM bucket exists
         run: |
-          BUCKET=$(grep ansible_aws_ssm_bucket_name ansible/inventory/aws_ec2.yml | grep -oP "'\K[^']+" | tr -d '[:space:]')
+          BUCKET=$(grep ansible_aws_ssm_bucket_name ansible/inventory/aws_ec2.yml | grep -oP "'\K[^']+" | tr -d '[:space:]"')
           echo "Checking bucket: $BUCKET"
           aws s3api head-bucket --bucket "$BUCKET"
 
