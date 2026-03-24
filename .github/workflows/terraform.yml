@@ -206,6 +206,12 @@ jobs:
       - name: Wait for instances to be ready
         run: sleep 60
 
+      - name: Verify SSM bucket exists
+        run: |
+          BUCKET=$(grep ansible_aws_ssm_bucket_name ansible/inventory/aws_ec2.yml | grep -oP "'\K[^']+")
+          echo "Checking bucket: $BUCKET"
+          aws s3api head-bucket --bucket "$BUCKET"
+
       - name: Configure Worker Nodes
         working-directory: ansible
         run: ansible-playbook -i inventory/aws_ec2.yml playbooks/setup-worker.yml
