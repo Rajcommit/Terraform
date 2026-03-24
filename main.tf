@@ -178,3 +178,10 @@ resource "local_file" "ansible_inventory" {
 
   depends_on = [module.compute, module.elk]
 }
+
+resource "local_file" "aws_ec2_inventory" {
+  content = templatefile("${path.module}/ansible/inventory/aws_ec2.yml.tpl", {
+    ssm_bucket_name = module.backup.s3_bucket_name
+  })
+  filename = "${path.module}/ansible/inventory/aws_ec2.yml"
+}

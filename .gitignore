@@ -114,3 +114,6 @@ blueprint/
 
 # Local data directory
 Data/
+
+# Generated Ansible inventory (templated by Terraform)
+ansible/inventory/aws_ec2.yml
