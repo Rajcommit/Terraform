@@ -204,3 +204,16 @@ resource "aws_elasticache_cluster" "redis" {
 
 }
 
+
+### variable "sensetive_content" {
+##   sensetive = true
+##   default = "supersensetivepassword"
+##  }
+
+
+#resource "local_file" "foo"  {
+#   content = var.sensetive_content
+#   filename = "password.txt"
+#}
+
+
